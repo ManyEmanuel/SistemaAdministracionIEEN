@@ -11,7 +11,7 @@
           @click="drawer = !drawer"
         />
         <q-toolbar-title>
-          Plantilla IEEN
+          Sistema de Administración 
         </q-toolbar-title>
 
         <div><q-btn flat label="Cerrar Sesión" text-color="white" /></div>
@@ -135,7 +135,7 @@ const linksList = [
     link: {name:'colores'}
   },
   {
-    title: 'Catálogos',
+    title: 'Catálogos de Tipos',
     icon: 'looks_one',
     link: {name:'Catalogos'}
   },
