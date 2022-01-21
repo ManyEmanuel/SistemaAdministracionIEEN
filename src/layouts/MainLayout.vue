@@ -135,9 +135,9 @@ const linksList = [
     link: {name:'colores'}
   },
   {
-    title: 'Ejemplo 1',
+    title: 'Catálogos',
     icon: 'looks_one',
-    link: {name:'ejemplo1'}
+    link: {name:'Catalogos'}
   },
   {
     title: 'Ejemplo 2',
