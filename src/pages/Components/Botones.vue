@@ -1274,7 +1274,7 @@ import {api} from '../../boot/axios.js'
 const columns = [
                 { name: 'name', field: rows2 => rows2.name ,format: val => `${val}`,align: 'left', label: 'Columna 1', field: 'Columna1', sortable: true },
                 { name: 'Columna2', align: 'left', label: 'Columna 2', field: 'Columna2', sortable: true, },
-                { name: 'Columna3', align: 'left', label: 'Columna 3', field: 'Columna3' },
+                { name: 'Columna35', align: 'left', label: 'Columna 3', field: 'Columna3' },
                 { name: 'Columna4', align: 'left', label: 'Columna 4', field: 'Columna4' },
                 
             ]
