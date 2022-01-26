@@ -1,7 +1,9 @@
 <template>
   <div class="q-pa-md">
-    <h4 class="text-center">Catálogos de Tipos</h4>
+    <h4 class="text-center">Catálogos de Tipos</h4><br>
+   
     <q-card>
+      
       <q-tabs
         v-model="tab"
         dense
@@ -19,35 +21,41 @@
 
       <q-separator />
 
-      <q-tab-panels v-model="tab" animated>
-        
-        <q-tab-panel name="Areas">
-          <div class="row q-pa-sm q-gutter-md">
-                    <div class="col-12">                     
-                        <q-table
-                            title="Tipos de Areas"
-                            :rows="rowsareas"
-                            :columns="columnsareas"
-                            :filter="textB"
-                            color="purple-ieen"
-                            v-model:pagination="pagination"
-                            no-data-label="No se encontraron registros"
-                            rows-per-page-label="Registros por página"                         
-                            >
-                            <template v-slot:top-right>
-                                <q-input v-model="textbuscar" dense label="Buscar"  class="q-pr-md">
-                                <template v-slot:append>
-                                    <q-icon v-if="textbuscar !== ''" name="close" @click="textbuscar = ''" class="cursor-pointer" />
-                                    <q-icon v-else name="search" />
-                                </template>
-                                </q-input>
-                                <q-btn flat round color="purple-ieen" icon="archive" @click="exportTable"/>
-                            </template>
-                        </q-table>
-                    </div>
-                </div>
+      <q-tab-panels v-model="tab" animated class="text-right">
+        //Registro de tipo de area//
+        <q-tab-panel name="Areas">         
+          <div class="row q-pa-sm q-gutter-md">   
+    
+              <div class="col-12">   
+                <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroTipoArea = true"/>
+                  <q-table
+                      title="Tipos de Areas"
+                      :rows="rowsareas"
+                      :columns="columnsareas"
+                      :filter="textbuscar"
+                      row-key ="id"
+                      color="purple-ieen"
+                      v-model:pagination="pagination"
+                      no-data-label="No se encontraron registros"
+                      rows-per-page-label="Registros por página"                         
+                      >
+                      <template v-slot:top-right>
+                          <q-input v-model="textbuscar" dense label="Buscar"  class="q-pr-md">
+                          <template v-slot:append>
+                              <q-icon v-if="textbuscar !== ''" name="close" @click="textbuscar = ''" class="cursor-pointer" />
+                              <q-icon v-else name="search" />
+                          </template>
+                          </q-input>
+                          <q-btn flat round color="purple-ieen" icon="archive" @click="exportTable"/>
+                      </template>
+                  </q-table>
+              </div>
+          </div>
         </q-tab-panel>
+        
 
+
+        //----------------------------------------------------------------------------------------------------------------------------------------//
         <q-tab-panel name="Empleados">
           <div class="text-h6">Alarms</div>
           Lorem ipsum dolor sit amet consectetur adipisicing elit.
@@ -65,63 +73,118 @@
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
+    <q-dialog v-model="RegistroTipoArea" persistent transition-show="scale" transition-hide="scale">
+       <q-card class=" text-black" style="width: 300px">
+      <q-form
+      @submit="onSubmit"
+      @reset="onReset"
+      class="q-gutter-md"
+    >
+      <q-input
+        filled
+        v-model="tipoArea"
+        label="  Titulo del nuevo tipo de area"
+        lazy-rules
+        :rules="[ val => val && val.length > 0 || 'Por favor ingresa un titulo']"
+      />
+
+      
+      <div>
+        <q-btn label="Guardar" type="submit" color="positive"/>
+        <q-btn label="Cancelar" type="reset" color="negative"  class="q-ml-sm" @click="RegistroTipoArea = false" />
+      </div>
+    </q-form>
+       </q-card>
+    </q-dialog> 
+
   </div>
-  
+ 
 </template>
 
 <script>
 import { defineComponent,ref } from 'vue';
-import { exportFile, useQuasar,QStepperNavigation, Notify, QStepper } from 'quasar'
+import { exportFile, useQuasar, Dialog, QStepperNavigation, Notify, QStepper } from 'quasar'
+import {api} from '../boot/axios.js'
 
 
-const columnsareas = [
-                { name: 'name', field: rows2 => rows2.name ,format: val => `${val}`,align: 'left', label: 'Columna 1', field: 'Columna1', sortable: true },
-                { name: 'Columna25', align: 'left', label: 'Columna 2', field: 'A', sortable: true, },
-                { name: 'Columna35', align: 'left', label: 'Columna 3', field: 'Columna3' },
-                { name: 'Columna4', align: 'left', label: 'Columna 4', field: 'Columna4' },
+const columnsareas = [                
+                { name: 'tipo', align: 'center', label: 'Tipo Área', field: 'tipo', sortable: true, },
+                { name: 'Opciones', align: 'center', label: 'Opciones', field: 'Opciones' },
+                
                 
             ]
- const rowsareas=[
-            {
-                Columna1: "Registro1",
-                Columna2: "Hola columna2",
-                Columna3: "Hola columna3",
-                Columna4: "Hola columna4"
-            },
-             {
-                Columna1: "Registro2",
-                Columna2: "Hola columna2",
-                Columna3: "Hola columna3",
-                Columna4: "Hola columna4"
-            },
-             {
-                Columna1: "Registro3",
-                Columna2: "Hola columna2",
-                Columna3: "Hola columna3",
-                Columna4: "Hola columna4"
-            },
-             {
-                Columna1: "Registro4",
-                Columna2: "Hola columna2",
-                Columna3: "Hola columna3",
-                Columna4: "Hola columna4"
-            },
-            
-        ]
+
 
 export default defineComponent({
   name: 'Catalogos',
   
   setup(){
+    const $q = useQuasar()
     const textbuscar = ref('')
+    const rowsareas = ref([])
+    const rowsT = ref([])
+    const tipoArea = ref("")
+    
+    const pagination = ref({
+        page: 1,
+        rowsPerPage: 10,
+        sortBy: 'name',
+        descending: false,
+        }
+    )
+    const getAreas = async () => {
+      api.get('/TiposAreas').then(res => {  
+        let {data} = res.data
+        data.forEach(reg => {
+            let obj = {
+                        "id":reg.id,
+                        "tipo":reg.tipo,                 
+                      };
+            rowsareas.value.push(obj)
+        })
+      })      
+    }
+    getAreas()
+     
     return{
-       tab: ref('Areas'),
+       tab: ref('Areas'),   
        textbuscar,
+       tipoArea,
+       RegistroTipoArea: ref(false),
        columnsareas,
+       pagination,
        rowsareas,
+
+       onSubmit(){
+          api.post("/TiposAreas",{
+             tipo: tipoArea.value,
+          }).then(function (respuesta){
+            let data = respuesta.code;
+            if(data == 200){
+              RegistroTipoArea.value =false;
+              $q.notify({
+                type: 'positive',
+                message: 'Tipo de área registrada".',
+                position: 'top-right',
+                progress: true,                
+              })
+              
+            }else{
+              $q.notify({
+                type: 'negative',
+                message: 'Error al registrar el tipo de área".',
+                position: 'top-right',
+                progress: true
+              })
+            }
+          })  
+          getAreas()      
+       },
+
+       
        exportTable () {
-          const content = [columns.map(col => wrapCsvValue(col.label))].concat(
-          rows.map(row => columns.map(col => wrapCsvValue(
+          const content = [columnsareas.map(col => wrapCsvValue(col.label))].concat(
+          rowsareas.value.map(row => columnsareas.map(col => wrapCsvValue(
               typeof col.field === 'function'
               ? col.field(row)
               : row[ col.field === void 0 ? col.name : col.field ],
@@ -139,13 +202,16 @@ export default defineComponent({
           $q.notify({
               message: 'Archivo no se pudo descargar...',
               color: 'negative',
-              icon: 'warning'
+              icon: 'warning',
+              position: 'top-right'
           })
           }
       }, 
-       
+      
       
     }
+
+   
     function wrapCsvValue (val, formatFn) {
       let formatted = formatFn !== void 0
           ? formatFn(val)
@@ -165,7 +231,8 @@ export default defineComponent({
 
       return `"${formatted}"`
     }
-  }
+    
+  },
   
 })
 </script>
