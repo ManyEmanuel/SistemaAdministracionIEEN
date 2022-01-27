@@ -28,10 +28,8 @@
         </q-tab-panel>
                
         <q-tab-panel name="Empleados">
-          <div class="text-h6">Alarms</div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <TemplateTipoEmpleado/>
         </q-tab-panel>
-
 
         <q-tab-panel name="Movimientos">
           <div class="text-h6">Alarms</div>
@@ -50,7 +48,8 @@
 
 <script>
 import { defineComponent,ref } from 'vue';
-import TemplateTipoArea from '../Components/TipoAreas/TemplateTipoArea.vue';
+import TemplateTipoArea from '../Components/CatalogosTipos/TemplateTipoArea.vue';
+import TemplateTipoEmpleado from '../Components/CatalogosTipos/TemplateTipoEmpleado.vue';
 
 
 
@@ -58,7 +57,8 @@ import TemplateTipoArea from '../Components/TipoAreas/TemplateTipoArea.vue';
 export default defineComponent({
   name: 'Catalogos',
   components : {
-      TemplateTipoArea
+      TemplateTipoArea,
+      TemplateTipoEmpleado,
   },
   setup(){   
     return{
