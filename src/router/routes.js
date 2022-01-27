@@ -7,7 +7,9 @@ const routes = [
      // { path: '', component: () => import('pages/Index.vue') },
      // { path: 'Componentes', name:'botones', component: () => import('pages/Components/Botones.vue') },
      // { path: 'Colores',name:'colores', component: () => import('pages/Components/Colores.vue') },
-      { path: '', name:'Catalogos',component: () => import('pages/Catalogos.vue') },
+      { path: '', name:'CatalogosTipos',component: () => import('src/pages/Principal/CatalogosTipos.vue') },
+      { path: '', name:'TemplateTipoArea',component: () => import('src/pages/Components/TipoAreas/TemplateTipoArea.vue') },
+
      // { path: '', name:'ejemplo2', component: () => import('pages/Ejemplo2.vue') }
     ]
   },

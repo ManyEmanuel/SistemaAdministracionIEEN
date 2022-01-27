@@ -124,26 +124,12 @@ import EssentialLink from 'components/EssentialLink.vue'
 
 const linksList = [
   
- {
-    title: 'Componentes',
-    icon: 'grid_view',
-    link: {name:'botones'}
-  },
-  {
-    title: 'Colores',
-    icon: 'palette',
-    link: {name:'colores'}
-  },
   {
     title: 'Catálogos de Tipos',
     icon: 'looks_one',
     link: {name:'Catalogos'}
   },
-  {
-    title: 'Ejemplo 2',
-    icon: 'looks_two',
-    link: {name:'ejemplo2'}
-  },
+
 ]
 import { defineComponent, ref } from 'vue'
 
