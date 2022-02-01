@@ -2,11 +2,11 @@
           <!-- Aqui inicia el template con la tabla -->       
   <div class="row q-pa-sm q-gutter-md">     
       <div class="col-12">   
-        <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroTipoArea = true"/>
+        <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroPuesto = true, limpiarRegistro()"/>
           <q-table
-              title="Tipos de Areas"
-              :rows="rowsareas"
-              :columns="columnsareas"
+              title="Registro de puestos"
+              :rows="rowspuestos"
+              :columns="columnspuestos"
               :filter="textbuscar"
               row-key ="id"
               color="purple-ieen"
@@ -31,12 +31,12 @@
                     :key="col.name"
                     :props="props"
                   >
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeleteTipoArea(col.value)"> 
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeletePuesto(col.value)"> 
                     <q-tooltip>
                       Borrar registro
                     </q-tooltip>
                   </q-btn>
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="edit" @click="EditarTipoAreaMetodo(col.value)">
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="edit" @click="EditarPuestoMetodo(col.value)">
                     <q-tooltip>
                       editar registro
                     </q-tooltip>
@@ -49,57 +49,121 @@
       </div>
   </div>
        <!-- Dialog para el registro de  tipo de area -->
-    <q-dialog v-model="RegistroTipoArea" persistent transition-show="scale" transition-hide="scale">
+    <q-dialog v-model="RegistroPuesto" persistent transition-show="scale" transition-hide="scale">
       <q-card style="width: 700px; max-width: 80vw;">
         <q-card-section>
-          <div class="text-h6">Registro de tipo de área</div>
+          <div class="text-h6">Registro de puesto</div>
         </q-card-section>
         <q-card-section>
           <q-form
             @submit="onSubmit"
-            class="q-gutter-md"
+            class="q-gutter-sm"
             >
-            <q-input
-              filled
-              v-model="tipoArea"
-              label="  Titulo del nuevo tipo de area"
-              lazy-rules
-              :rules="[ val => val && val.length > 0 || 'Por favor ingresa un titulo']"
-            />     
-            <q-card-actions align="right">
-              <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroTipoArea = false" />
-              <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />        
-            </q-card-actions>
+              <div class="q-gutter-sm row items-start">
+                <div class="col">
+                  <q-input
+                    filled
+                    v-model="nombrePuesto"
+                    label="Nombre del puesto"
+                    lazy-rules
+                    :rules="[ val => val && val.length > 0 || 'Por favor ingresa un nombre']"
+                  />  
+                </div>
+              </div>
+              <div class="q-gutter-sm row items-start">
+                <div class="col">
+                  <q-input
+                    filled
+                    v-model="descripcionPuesto"
+                    label="Descripción del puesto"
+                    lazy-rules
+                    :rules="[ val => val && val.length > 0 || 'Por favor ingresa una descripción']"
+                  />  
+                </div>
+                
+              </div>           
+              <div class="q-gutter-sm row items-start">
+                <div class="col">
+                  <q-input
+                    filled
+                    v-model="sueldoPuesto"
+                    label="Sueldo del puesto"
+                    type="number" prefix="$"
+                    lazy-rules
+                    :rules="[ val => val && val > 0 || 'Por favor ingresa un sueldo']"
+                   
+                  />  
+                </div>
+                <div class="col">
+                  
+                </div>
+              </div>               
+              <q-card-actions align="right">
+                <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroPuesto = false" />
+                <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />        
+              </q-card-actions>
           </q-form>
         </q-card-section>
       </q-card>
     </q-dialog> 
 
        <!-- Dilog pata la edición del tipo de area -->
-    <q-dialog v-model="EditarTipoArea" persistent transition-show="scale" transition-hide="scale">
+    <q-dialog v-model="EditarPuesto" persistent transition-show="scale" transition-hide="scale">
         <q-card style="width: 700px; max-width: 80vw;">
-            <q-card-section>
-              <div class="text-h6">Editar tipo de área</div>
-              </q-card-section>
-            <q-card-section>
-              <q-form
+          <q-card-section>
+            <div class="text-h6">Editar puesto</div>
+          </q-card-section>
+          <q-card-section>
+            <q-form
                 @submit="onEdit"
                 class="q-gutter-md"
             >
-                <q-input  v-show="false" v-model="idEditarArea" />
-                <q-input
-                  filled
-                  v-model="editarArea"
-                  label="  Nuevo nombre del tipo de área"
-                  lazy-rules
-                  :rules="[ val => val && val.length > 0 || 'Por favor ingresa un titulo']"
-                />            
+              <q-input  v-show="false" v-model="idpuesto" />
+              <div class="q-gutter-sm row items-start">
+                <div class="col">
+                  <q-input
+                    filled
+                    v-model="nombrePuesto"
+                    label="Nombre del puesto"
+                    lazy-rules
+                    :rules="[ val => val && val.length > 0 || 'Por favor ingresa un nombre']"
+                  />  
+                </div>
+              </div>
+              <div class="q-gutter-sm row items-start">
+                <div class="col">
+                  <q-input
+                    filled
+                    v-model="descripcionPuesto"
+                    label="Descripción del puesto"
+                    lazy-rules
+                    :rules="[ val => val && val.length > 0 || 'Por favor ingresa una descripción']"
+                  />  
+                </div>
+                
+              </div>           
+              <div class="q-gutter-sm row items-start">
+                <div class="col">
+                  <q-input
+                    filled
+                    v-model="sueldoPuesto"
+                    label="Sueldo del puesto"
+                    type="number" prefix="$"
+                    lazy-rules
+                    :rules="[ val => val && val > 0 || 'Por favor ingresa un sueldo']"
+                   
+                  />  
+                </div>
+                <div class="col">
+                  
+                </div>
+              </div>              
                 <q-card-actions align="right">
-                  <q-btn label="Cancelar" type="reset" color="negative"   @click="EditarTipoArea = false" />
+                  <q-btn label="Cancelar" type="reset" color="negative"   @click="EditarPuesto = false" />
                   <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />             
                 </q-card-actions>
               </q-form>
-            </q-card-section>
+          </q-card-section>
         </q-card>
     </q-dialog>    
   
@@ -111,27 +175,35 @@ import { exportFile, useQuasar} from 'quasar'
 import {api} from '../../../boot/axios.js'
 
 
-const columnsareas = [                
-                { name: 'tipo', align: 'center', label: 'Tipo Área', field: 'tipo', sortable: true, },
-                { name: 'id', align: 'center', label: 'Opciones', field: 'id' },
+const columnspuestos = [                               
                 
+                { name: 'nombre', align: 'center', label: 'Nombre del Puesto', field: 'nombre', sortable: true, },
+                { name: 'descripcion', align: 'center', label: 'Descripción del Puesto', field: 'descripcion', sortable: true, },
+                { name: 'sueldo', align: 'center', label: 'Sueldo del Puesto', field: 'sueldo', sortable: true, },
+                { name: 'id', align: 'center', label: 'Opciones', field: 'id' },
                 
             ]
 
 
 export default defineComponent({
-  name: 'TemplateTipoArea',
+  name: 'TemplateRequisitos',
   
   setup(){
     const $q = useQuasar()
+    //Variables de guardado y edición
+    const idpuesto = ref('')
+    const nombrePuesto = ref('')
+    const descripcionPuesto = ref('')
+    const sueldoPuesto = ref('')
+    //---------------------------------------------------------------------------//
+    //
     const textbuscar = ref('')
-    const rowsareas = ref([])
-    const tipoArea = ref("")
+    const rowspuestos = ref([]) 
     const idEditarArea = ref("")
     const editarArea = ref("")
     const loading = ref(true)
-    const RegistroTipoArea = ref(false)
-    const EditarTipoArea = ref(false)
+    const RegistroPuesto = ref(false)
+    const EditarPuesto = ref(false)
     const pagination = ref({
         page: 1,
         rowsPerPage: 10,
@@ -141,22 +213,35 @@ export default defineComponent({
     )
     // Este es el metodo para listar en tabla
     const getAreas = async () => {
-      api.get('/TiposAreas').then(res => {  
+      api.get('/Puestos').then(res => {  
         let {data} = res.data
         data.forEach(reg => {
             let obj = {
                         "id":reg.id,
-                        "tipo":reg.tipo,                 
+                        "nombre":reg.nombre,
+                        "descripcion":reg.descripcion,
+                        "sueldo":reg.sueldo,               
                       };
-            rowsareas.value.push(obj)
+            rowspuestos.value.push(obj)
         })
       })      
       loading.value = false
     }
     getAreas()
 
+    const EditarPuestoMetodo = function(id){
+      EditarPuesto.value = true    
+      api.get('/Puestos/'+id).then(function(res) {  
+        let {data} = res.data
+            idpuesto.value = data.id
+            nombrePuesto.value = data.nombre
+            descripcionPuesto.value = data.descripcion
+            sueldoPuesto.value = data.sueldo
+           
+      });      
+    }  
     // Este es el metodo para eliminar registro
-    const DeleteTipoArea = function(id){ 
+    const DeletePuesto = function(id){ 
       $q.dialog({
         title: 'Eliminar registro',
         icon: 'Warning',
@@ -168,11 +253,11 @@ export default defineComponent({
           color: 'negative',
           label: 'Cancelar'
         },
-        message: '¿Esta seguro de eliminar este tipo de área?',
+        message: '¿Esta seguro de eliminar este puesto?',
         persistent: true
       }).onOk(() => {
          $q.loading.show()
-          api.delete('/TiposAreas/'+id).then(function (respuesta){    
+          api.delete('/Puestos/'+id).then(function (respuesta){    
             let{data,success} = respuesta.data        
             if(respuesta.status == 200 && success == true){        
               $q.notify({
@@ -183,10 +268,10 @@ export default defineComponent({
               })
             
               loading.value = true
-              rowsareas.value = [  ]
+              rowspuestos.value = [  ]
               getAreas()
               loading.value = false
-              RegistroTipoArea.value = false
+              RegistroPuesto.value = false
                $q.loading.hide()
             
            
@@ -204,36 +289,42 @@ export default defineComponent({
     }
   
     //Este es el metodo para editar registro
-    const EditarTipoAreaMetodo = function(id){
-      EditarTipoArea.value = true;
-      api.get('/TiposAreas/'+id).then(function(res) {  
-        let {data} = res.data
-            editarArea.value = data.tipo
-            idEditarArea.value = data.id 
-        })
+
+    const limpiarRegistro = function(){
+        idpuesto.value = ""
+        nombrePuesto.value=""
+        descripcionPuesto.value=""
+        sueldoPuesto.value=""
     }
        
+     
     return{
-       
+       // Variables de guardado y edición
+       nombrePuesto,
+       descripcionPuesto,
+       sueldoPuesto,
+       idpuesto,
        textbuscar,
-       tipoArea,
        editarArea,
        idEditarArea,
-       columnsareas,
-       rowsareas,
-       RegistroTipoArea,
-       EditarTipoArea,
-       EditarTipoAreaMetodo,
-       DeleteTipoArea,
+       columnspuestos,
+       rowspuestos,
+       RegistroPuesto,
+       EditarPuesto,
+       DeletePuesto,
        pagination,
        loading,
-       
+       limpiarRegistro,
+       EditarPuestoMetodo,
       //MEtodo submit para guardar registro
        onSubmit(){ 
           $q.loading.show()
-          api.post("/TiposAreas",{
-             tipo: tipoArea.value,
+          api.post("/Puestos",{
+                   nombre: nombrePuesto.value,
+                   descripcion: descripcionPuesto.value,
+                   sueldo: sueldoPuesto.value,
           }).then(function (respuesta){       
+            console.log(respuesta)
               let{data,success} = respuesta.data
             if(respuesta.status == 200 && success == true){
               
@@ -244,11 +335,11 @@ export default defineComponent({
                   progress: true,                            
                 })                                 
                 loading.value = true
-                rowsareas.value = [  ]
+                rowspuestos.value = [  ]
                 getAreas()
                 loading.value = false
-                RegistroTipoArea.value = false 
-                tipoArea.value ="" 
+                RegistroPuesto.value = false 
+                limpiarRegistro()
               $q.loading.hide()
               
             }else{
@@ -262,12 +353,16 @@ export default defineComponent({
             }              
           })     
        },
+
+      
       //Metodo edit para editar los registros
         onEdit(){
           $q.loading.show()
-          const idT = idEditarArea.value;
-          api.put("/TiposAreas/"+idT,{
-              tipo: editarArea.value
+          const idT = idpuesto.value;
+          api.put("/Puestos/"+idT,{
+                nombre: nombrePuesto.value,
+                descripcion: descripcionPuesto.value,
+                sueldo: sueldoPuesto.value,
           }).then(function (respuesta){   
             let{data,success} = respuesta.data         
             if(respuesta.status == 200 && success == true){        
@@ -278,10 +373,11 @@ export default defineComponent({
                 progress: true,                            
               })            
               loading.value = true
-              rowsareas.value = [  ]
+              rowspuestos.value = [  ]
               getAreas()
               loading.value = false
-              EditarTipoArea.value = false
+              EditarPuesto.value = false
+              limpiarRegistro()
              $q.loading.hide()
             }else{
               $q.notify({
@@ -294,10 +390,10 @@ export default defineComponent({
             }
           })     
           },
-      
+
        exportTable () {
-          const content = [columnsareas.map(col => wrapCsvValue(col.label))].concat(
-          rowsareas.value.map(row => columnsareas.map(col => wrapCsvValue(
+          const content = [columnspuestos.map(col => wrapCsvValue(col.label))].concat(
+          rowspuestos.value.map(row => columnspuestos.map(col => wrapCsvValue(
               typeof col.field === 'function'
               ? col.field(row)
               : row[ col.field === void 0 ? col.name : col.field ],

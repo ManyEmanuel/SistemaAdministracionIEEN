@@ -125,9 +125,15 @@ import EssentialLink from 'components/EssentialLink.vue'
 const linksList = [
   
   {
-    title: 'Catálogos de Tipos',
-    icon: 'looks_one',
-    link: {name:'Catalogos'}
+    title: 'CÁTALOGOS DE TIPOS',
+    icon: 'list_alt',
+    link: {name:'CatalogosTipos'}
+  },
+
+  {
+    title: 'CATÁLOGOS PRINCIPALES',
+    icon: 'list_alt',
+    link: {name:'CatalogosPrincipal'}
   },
 
 ]

@@ -2,11 +2,11 @@
           <!-- Aqui inicia el template con la tabla -->       
   <div class="row q-pa-sm q-gutter-md">     
       <div class="col-12">   
-        <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroTipoArea = true"/>
+        <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroTipoMovimiento = true"/>
           <q-table
-              title="Tipos de Areas"
-              :rows="rowsareas"
-              :columns="columnsareas"
+              title="Tipos de Movimiento"
+              :rows="rowsmovimientos"
+              :columns="columnsmovimientos"
               :filter="textbuscar"
               row-key ="id"
               color="purple-ieen"
@@ -31,16 +31,18 @@
                     :key="col.name"
                     :props="props"
                   >
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeleteTipoArea(col.value)"> 
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeleteTipoMovimiento(col.value)"> 
                     <q-tooltip>
                       Borrar registro
                     </q-tooltip>
                   </q-btn>
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="edit" @click="EditarTipoAreaMetodo(col.value)">
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="edit" @click="EditarTipoMovimientoMetodo(col.value)">
                     <q-tooltip>
                       editar registro
                     </q-tooltip>
-                  </q-btn>
+                  </q-btn>                 
+                  <label v-else-if="col.name === 'naturaleza' && col.value ==='A'"> Alta</label>
+                  <label v-else-if="col.name === 'naturaleza' && col.value ==='B'"> Baja</label>
                   <label v-else>{{col.value}}</label>
                   </q-td>
                 </q-tr>
@@ -49,10 +51,10 @@
       </div>
   </div>
        <!-- Dialog para el registro de  tipo de area -->
-    <q-dialog v-model="RegistroTipoArea" persistent transition-show="scale" transition-hide="scale">
+    <q-dialog v-model="RegistroTipoMovimiento" persistent transition-show="scale" transition-hide="scale">
       <q-card style="width: 700px; max-width: 80vw;">
         <q-card-section>
-          <div class="text-h6">Registro de tipo de área</div>
+          <div class="text-h6">Registro de tipo de movimiento</div>
         </q-card-section>
         <q-card-section>
           <q-form
@@ -61,13 +63,18 @@
             >
             <q-input
               filled
-              v-model="tipoArea"
-              label="  Titulo del nuevo tipo de area"
+              v-model="tipoMovimiento"
+              label="  Titulo del nuevo tipo de movimiento"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'Por favor ingresa un titulo']"
-            />     
+            />    
+            <label>¿Que naturaleza tiene este movimiento?</label><br>
+            
+            <q-radio v-model="naturalezaMovimiento" val="A" label="Alta" color="purple-ieen"/>
+            <q-radio v-model="naturalezaMovimiento" val="B" label="Baja" color="purple-ieen"/>
+            
             <q-card-actions align="right">
-              <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroTipoArea = false" />
+              <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroTipoMovimiento = false" />
               <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />        
             </q-card-actions>
           </q-form>
@@ -76,43 +83,47 @@
     </q-dialog> 
 
        <!-- Dilog pata la edición del tipo de area -->
-    <q-dialog v-model="EditarTipoArea" persistent transition-show="scale" transition-hide="scale">
+    <q-dialog v-model="EditarTipoMovimiento" persistent transition-show="scale" transition-hide="scale">
         <q-card style="width: 700px; max-width: 80vw;">
             <q-card-section>
-              <div class="text-h6">Editar tipo de área</div>
+              <div class="text-h6">Editar tipo de movimiento</div>
               </q-card-section>
             <q-card-section>
               <q-form
                 @submit="onEdit"
                 class="q-gutter-md"
             >
-                <q-input  v-show="false" v-model="idEditarArea" />
+                <q-input  v-show="false" v-model="idEditarMovimiento" />
                 <q-input
                   filled
-                  v-model="editarArea"
-                  label="  Nuevo nombre del tipo de área"
+                  v-model="editarMovimiento"
+                  label="  Nuevo nombre del tipo de movimiento"
                   lazy-rules
                   :rules="[ val => val && val.length > 0 || 'Por favor ingresa un titulo']"
-                />            
+                />   
+                <label>¿Que naturaleza tiene este movimiento?</label><br>            
+                <q-radio v-model="editarNaturaleza" val="A" label="Alta" color="purple-ieen"/>
+                <q-radio v-model="editarNaturaleza" val="B" label="Baja" color="purple-ieen"/>  
                 <q-card-actions align="right">
-                  <q-btn label="Cancelar" type="reset" color="negative"   @click="EditarTipoArea = false" />
+                  <q-btn label="Cancelar" type="reset" color="negative"   @click="EditarTipoMovimiento = false" />
                   <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />             
                 </q-card-actions>
               </q-form>
             </q-card-section>
         </q-card>
     </q-dialog>    
-  
+
 </template>
 
 <script>
 import { defineComponent,ref } from 'vue';
-import { exportFile, useQuasar} from 'quasar'
+import { exportFile, useQuasar } from 'quasar'
 import {api} from '../../../boot/axios.js'
 
 
-const columnsareas = [                
-                { name: 'tipo', align: 'center', label: 'Tipo Área', field: 'tipo', sortable: true, },
+const columnsmovimientos = [                
+                { name: 'tipo', align: 'center', label: 'Tipo de movimiento', field: 'tipo', sortable: true, },
+                { name: 'naturaleza', align: 'center', label: 'Naturaleza del movimiento', field: 'naturaleza', sortable: true, },
                 { name: 'id', align: 'center', label: 'Opciones', field: 'id' },
                 
                 
@@ -120,18 +131,20 @@ const columnsareas = [
 
 
 export default defineComponent({
-  name: 'TemplateTipoArea',
+  name: 'TemplateTipoMovimiento',
   
   setup(){
     const $q = useQuasar()
     const textbuscar = ref('')
-    const rowsareas = ref([])
-    const tipoArea = ref("")
-    const idEditarArea = ref("")
-    const editarArea = ref("")
+    const rowsmovimientos = ref([])
+    const tipoMovimiento = ref("")
+    const naturalezaMovimiento = ref("")
+    const idEditarMovimiento = ref("")
+    const editarMovimiento = ref("")
+    const editarNaturaleza = ref("")
     const loading = ref(true)
-    const RegistroTipoArea = ref(false)
-    const EditarTipoArea = ref(false)
+    const RegistroTipoMovimiento = ref(false)
+    const EditarTipoMovimiento = ref(false)
     const pagination = ref({
         page: 1,
         rowsPerPage: 10,
@@ -141,14 +154,15 @@ export default defineComponent({
     )
     // Este es el metodo para listar en tabla
     const getAreas = async () => {
-      api.get('/TiposAreas').then(res => {  
+      api.get('/TiposMovimientos').then(res => {  
         let {data} = res.data
         data.forEach(reg => {
             let obj = {
                         "id":reg.id,
-                        "tipo":reg.tipo,                 
+                        "tipo":reg.tipo, 
+                        "naturaleza": reg.naturaleza                
                       };
-            rowsareas.value.push(obj)
+            rowsmovimientos.value.push(obj)
         })
       })      
       loading.value = false
@@ -156,7 +170,7 @@ export default defineComponent({
     getAreas()
 
     // Este es el metodo para eliminar registro
-    const DeleteTipoArea = function(id){ 
+    const DeleteTipoMovimiento = function(id){ 
       $q.dialog({
         title: 'Eliminar registro',
         icon: 'Warning',
@@ -172,7 +186,7 @@ export default defineComponent({
         persistent: true
       }).onOk(() => {
          $q.loading.show()
-          api.delete('/TiposAreas/'+id).then(function (respuesta){    
+          api.delete('/TiposMovimientos/'+id).then(function (respuesta){    
             let{data,success} = respuesta.data        
             if(respuesta.status == 200 && success == true){        
               $q.notify({
@@ -183,10 +197,10 @@ export default defineComponent({
               })
             
               loading.value = true
-              rowsareas.value = [  ]
+              rowsmovimientos.value = [  ]
               getAreas()
               loading.value = false
-              RegistroTipoArea.value = false
+              RegistroTipoMovimiento.value = false
                $q.loading.hide()
             
            
@@ -204,35 +218,39 @@ export default defineComponent({
     }
   
     //Este es el metodo para editar registro
-    const EditarTipoAreaMetodo = function(id){
-      EditarTipoArea.value = true;
-      api.get('/TiposAreas/'+id).then(function(res) {  
+    const EditarTipoMovimientoMetodo = function(id){
+      EditarTipoMovimiento.value = true;
+      api.get('/TiposMovimientos/'+id).then(function(res) {  
         let {data} = res.data
-            editarArea.value = data.tipo
-            idEditarArea.value = data.id 
+            editarMovimiento.value = data.tipo
+            editarNaturaleza.value = data.naturaleza
+            idEditarMovimiento.value = data.id 
         })
     }
        
     return{
        
        textbuscar,
-       tipoArea,
-       editarArea,
-       idEditarArea,
-       columnsareas,
-       rowsareas,
-       RegistroTipoArea,
-       EditarTipoArea,
-       EditarTipoAreaMetodo,
-       DeleteTipoArea,
+       tipoMovimiento,
+       naturalezaMovimiento,
+       editarMovimiento,
+       editarNaturaleza,
+       idEditarMovimiento,
+       columnsmovimientos,
+       rowsmovimientos,
+       RegistroTipoMovimiento,
+       EditarTipoMovimiento,
+       EditarTipoMovimientoMetodo,
+       DeleteTipoMovimiento,
        pagination,
        loading,
        
       //MEtodo submit para guardar registro
        onSubmit(){ 
           $q.loading.show()
-          api.post("/TiposAreas",{
-             tipo: tipoArea.value,
+          api.post("/TiposMovimientos",{
+             tipo: tipoMovimiento.value,
+             naturaleza: naturalezaMovimiento.value
           }).then(function (respuesta){       
               let{data,success} = respuesta.data
             if(respuesta.status == 200 && success == true){
@@ -244,11 +262,12 @@ export default defineComponent({
                   progress: true,                            
                 })                                 
                 loading.value = true
-                rowsareas.value = [  ]
+                rowsmovimientos.value = [  ]
                 getAreas()
                 loading.value = false
-                RegistroTipoArea.value = false 
-                tipoArea.value ="" 
+                RegistroTipoMovimiento.value = false  
+                tipoMovimiento.value =""
+                naturalezaMovimiento.value = ""
               $q.loading.hide()
               
             }else{
@@ -265,9 +284,10 @@ export default defineComponent({
       //Metodo edit para editar los registros
         onEdit(){
           $q.loading.show()
-          const idT = idEditarArea.value;
-          api.put("/TiposAreas/"+idT,{
-              tipo: editarArea.value
+          const idT = idEditarMovimiento.value;
+          api.put("/TiposMovimientos/"+idT,{
+              tipo: editarMovimiento.value,
+              naturaleza: editarNaturaleza.value
           }).then(function (respuesta){   
             let{data,success} = respuesta.data         
             if(respuesta.status == 200 && success == true){        
@@ -278,10 +298,10 @@ export default defineComponent({
                 progress: true,                            
               })            
               loading.value = true
-              rowsareas.value = [  ]
+              rowsmovimientos.value = [  ]
               getAreas()
               loading.value = false
-              EditarTipoArea.value = false
+              EditarTipoMovimiento.value = false
              $q.loading.hide()
             }else{
               $q.notify({
@@ -296,8 +316,8 @@ export default defineComponent({
           },
       
        exportTable () {
-          const content = [columnsareas.map(col => wrapCsvValue(col.label))].concat(
-          rowsareas.value.map(row => columnsareas.map(col => wrapCsvValue(
+          const content = [columnsmovimientos.map(col => wrapCsvValue(col.label))].concat(
+          rowsmovimientos.value.map(row => columnsmovimientos.map(col => wrapCsvValue(
               typeof col.field === 'function'
               ? col.field(row)
               : row[ col.field === void 0 ? col.name : col.field ],

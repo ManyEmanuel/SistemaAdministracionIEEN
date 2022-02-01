@@ -32,13 +32,11 @@
         </q-tab-panel>
 
         <q-tab-panel name="Movimientos">
-          <div class="text-h6">Alarms</div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <TemplateTipoMovimiento/>
         </q-tab-panel>
 
         <q-tab-panel name="Representantes">
-          <div class="text-h6">Movies</div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          <TemplateTipoRepresentante/>
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -50,15 +48,19 @@
 import { defineComponent,ref } from 'vue';
 import TemplateTipoArea from '../Components/CatalogosTipos/TemplateTipoArea.vue';
 import TemplateTipoEmpleado from '../Components/CatalogosTipos/TemplateTipoEmpleado.vue';
+import TemplateTipoMovimiento from '../Components/CatalogosTipos/TemplateTipoMovimiento.vue';
+import TemplateTipoRepresentante from '../Components/CatalogosTipos/TemplateTipoRepresentante.vue'
 
 
 
 
 export default defineComponent({
-  name: 'Catalogos',
+  name: 'CatalogosTipos',
   components : {
       TemplateTipoArea,
       TemplateTipoEmpleado,
+      TemplateTipoMovimiento,
+      TemplateTipoRepresentante,
   },
   setup(){   
     return{

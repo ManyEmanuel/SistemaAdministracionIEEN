@@ -121,7 +121,7 @@
 
 <script>
 import { defineComponent,ref } from 'vue';
-import { exportFile, useQuasar, Dialog, QStepperNavigation, Notify, QStepper } from 'quasar'
+import { exportFile, useQuasar} from 'quasar'
 import {api} from '../../../boot/axios.js'
 
 
@@ -270,6 +270,8 @@ export default defineComponent({
                 getAreas()
                 loading.value = false
                 RegistroTipoEmpleado.value = false  
+                tipoEmpleado.value = ""
+                descriEmpleado.value = ""
               $q.loading.hide()
               
             }else{

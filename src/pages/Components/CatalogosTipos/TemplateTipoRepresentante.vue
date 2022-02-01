@@ -2,11 +2,11 @@
           <!-- Aqui inicia el template con la tabla -->       
   <div class="row q-pa-sm q-gutter-md">     
       <div class="col-12">   
-        <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroTipoArea = true"/>
+        <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroTipoRepresentante = true"/>
           <q-table
-              title="Tipos de Areas"
-              :rows="rowsareas"
-              :columns="columnsareas"
+              title="Tipos de Representantes"
+              :rows="rowsrepresentante"
+              :columns="columnsrepresentantes"
               :filter="textbuscar"
               row-key ="id"
               color="purple-ieen"
@@ -31,16 +31,16 @@
                     :key="col.name"
                     :props="props"
                   >
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeleteTipoArea(col.value)"> 
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeleteTipoRepresentante(col.value)"> 
                     <q-tooltip>
                       Borrar registro
                     </q-tooltip>
                   </q-btn>
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="edit" @click="EditarTipoAreaMetodo(col.value)">
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="edit" @click="EditarTipoRepresentanteMetodo(col.value)">
                     <q-tooltip>
                       editar registro
                     </q-tooltip>
-                  </q-btn>
+                  </q-btn>                 
                   <label v-else>{{col.value}}</label>
                   </q-td>
                 </q-tr>
@@ -49,10 +49,10 @@
       </div>
   </div>
        <!-- Dialog para el registro de  tipo de area -->
-    <q-dialog v-model="RegistroTipoArea" persistent transition-show="scale" transition-hide="scale">
+    <q-dialog v-model="RegistroTipoRepresentante" persistent transition-show="scale" transition-hide="scale">
       <q-card style="width: 700px; max-width: 80vw;">
         <q-card-section>
-          <div class="text-h6">Registro de tipo de área</div>
+          <div class="text-h6">Registro de tipo de representantes</div>
         </q-card-section>
         <q-card-section>
           <q-form
@@ -61,13 +61,23 @@
             >
             <q-input
               filled
-              v-model="tipoArea"
-              label="  Titulo del nuevo tipo de area"
+              v-model="tipoRepresentante"
+              label="  Titulo del nuevo tipo de representante"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'Por favor ingresa un titulo']"
-            />     
+            />  
+            <q-input
+              filled
+              v-model="prioridadRepresentante"
+              type="number"
+              label="  Prioridad del representante"
+              lazy-rules
+              :rules="[ val => val && val > 0 || 'Por favor agrega un número valido']"
+            />    
+            
+            
             <q-card-actions align="right">
-              <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroTipoArea = false" />
+              <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroTipoRepresentante = false" />
               <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />        
             </q-card-actions>
           </q-form>
@@ -76,33 +86,41 @@
     </q-dialog> 
 
        <!-- Dilog pata la edición del tipo de area -->
-    <q-dialog v-model="EditarTipoArea" persistent transition-show="scale" transition-hide="scale">
+    <q-dialog v-model="EditarTipoRepresentante" persistent transition-show="scale" transition-hide="scale">
         <q-card style="width: 700px; max-width: 80vw;">
             <q-card-section>
-              <div class="text-h6">Editar tipo de área</div>
+              <div class="text-h6">Editar tipo de movimiento</div>
               </q-card-section>
             <q-card-section>
               <q-form
                 @submit="onEdit"
                 class="q-gutter-md"
             >
-                <q-input  v-show="false" v-model="idEditarArea" />
+                <q-input  v-show="false" v-model="idEditarRepresentante" />
                 <q-input
                   filled
-                  v-model="editarArea"
-                  label="  Nuevo nombre del tipo de área"
+                  v-model="editarRepresentante"
+                  label="  Nuevo nombre del tipo de representante"
                   lazy-rules
                   :rules="[ val => val && val.length > 0 || 'Por favor ingresa un titulo']"
-                />            
+                />   
+                <q-input
+                  filled
+                  v-model="editarPrioridad"
+                  type="number"
+                  label="  Prioridad del representante"
+                  lazy-rules
+                  :rules="[ val => val && val > 0 || 'Por favor agrega un número valido']"
+                />    
                 <q-card-actions align="right">
-                  <q-btn label="Cancelar" type="reset" color="negative"   @click="EditarTipoArea = false" />
+                  <q-btn label="Cancelar" type="reset" color="negative"   @click="EditarTipoRepresentante = false" />
                   <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />             
                 </q-card-actions>
               </q-form>
             </q-card-section>
         </q-card>
     </q-dialog>    
-  
+
 </template>
 
 <script>
@@ -111,8 +129,9 @@ import { exportFile, useQuasar} from 'quasar'
 import {api} from '../../../boot/axios.js'
 
 
-const columnsareas = [                
-                { name: 'tipo', align: 'center', label: 'Tipo Área', field: 'tipo', sortable: true, },
+const columnsrepresentantes = [                
+                { name: 'tipo', align: 'center', label: 'Tipo de representante', field: 'tipo', sortable: true, },
+                { name: 'prioridad', align: 'center', label: 'Prioridad del representante', field: 'prioridad', sortable: true, },
                 { name: 'id', align: 'center', label: 'Opciones', field: 'id' },
                 
                 
@@ -120,18 +139,20 @@ const columnsareas = [
 
 
 export default defineComponent({
-  name: 'TemplateTipoArea',
+  name: 'TemplateTipoRepresentante',
   
   setup(){
     const $q = useQuasar()
     const textbuscar = ref('')
-    const rowsareas = ref([])
-    const tipoArea = ref("")
-    const idEditarArea = ref("")
-    const editarArea = ref("")
+    const rowsrepresentante = ref([])
+    const tipoRepresentante = ref("")
+    const prioridadRepresentante = ref(0)
+    const idEditarRepresentante = ref("")
+    const editarRepresentante = ref("")
+    const editarPrioridad = ref("")
     const loading = ref(true)
-    const RegistroTipoArea = ref(false)
-    const EditarTipoArea = ref(false)
+    const RegistroTipoRepresentante = ref(false)
+    const EditarTipoRepresentante = ref(false)
     const pagination = ref({
         page: 1,
         rowsPerPage: 10,
@@ -141,14 +162,15 @@ export default defineComponent({
     )
     // Este es el metodo para listar en tabla
     const getAreas = async () => {
-      api.get('/TiposAreas').then(res => {  
+      api.get('/TiposRepresentantes').then(res => {  
         let {data} = res.data
         data.forEach(reg => {
             let obj = {
                         "id":reg.id,
-                        "tipo":reg.tipo,                 
+                        "tipo":reg.tipo, 
+                        "prioridad": reg.prioridad                
                       };
-            rowsareas.value.push(obj)
+            rowsrepresentante.value.push(obj)
         })
       })      
       loading.value = false
@@ -156,7 +178,7 @@ export default defineComponent({
     getAreas()
 
     // Este es el metodo para eliminar registro
-    const DeleteTipoArea = function(id){ 
+    const DeleteTipoRepresentante = function(id){ 
       $q.dialog({
         title: 'Eliminar registro',
         icon: 'Warning',
@@ -172,7 +194,7 @@ export default defineComponent({
         persistent: true
       }).onOk(() => {
          $q.loading.show()
-          api.delete('/TiposAreas/'+id).then(function (respuesta){    
+          api.delete('/TiposRepresentantes/'+id).then(function (respuesta){    
             let{data,success} = respuesta.data        
             if(respuesta.status == 200 && success == true){        
               $q.notify({
@@ -183,10 +205,10 @@ export default defineComponent({
               })
             
               loading.value = true
-              rowsareas.value = [  ]
+              rowsrepresentante.value = [  ]
               getAreas()
               loading.value = false
-              RegistroTipoArea.value = false
+              RegistroTipoRepresentante.value = false
                $q.loading.hide()
             
            
@@ -204,35 +226,39 @@ export default defineComponent({
     }
   
     //Este es el metodo para editar registro
-    const EditarTipoAreaMetodo = function(id){
-      EditarTipoArea.value = true;
-      api.get('/TiposAreas/'+id).then(function(res) {  
+    const EditarTipoRepresentanteMetodo = function(id){
+      EditarTipoRepresentante.value = true;
+      api.get('/TiposRepresentantes/'+id).then(function(res) {  
         let {data} = res.data
-            editarArea.value = data.tipo
-            idEditarArea.value = data.id 
+            editarRepresentante.value = data.tipo
+            editarPrioridad.value = data.prioridad
+            idEditarRepresentante.value = data.id 
         })
     }
        
     return{
        
        textbuscar,
-       tipoArea,
-       editarArea,
-       idEditarArea,
-       columnsareas,
-       rowsareas,
-       RegistroTipoArea,
-       EditarTipoArea,
-       EditarTipoAreaMetodo,
-       DeleteTipoArea,
+       tipoRepresentante,
+       prioridadRepresentante,
+       editarRepresentante,
+       editarPrioridad,
+       idEditarRepresentante,
+       columnsrepresentantes,
+       rowsrepresentante,
+       RegistroTipoRepresentante,
+       EditarTipoRepresentante,
+       EditarTipoRepresentanteMetodo,
+       DeleteTipoRepresentante,
        pagination,
        loading,
        
       //MEtodo submit para guardar registro
        onSubmit(){ 
           $q.loading.show()
-          api.post("/TiposAreas",{
-             tipo: tipoArea.value,
+          api.post("/TiposRepresentantes",{
+             tipo: tipoRepresentante.value,
+             prioridad: prioridadRepresentante.value
           }).then(function (respuesta){       
               let{data,success} = respuesta.data
             if(respuesta.status == 200 && success == true){
@@ -244,11 +270,12 @@ export default defineComponent({
                   progress: true,                            
                 })                                 
                 loading.value = true
-                rowsareas.value = [  ]
+                rowsrepresentante.value = [  ]
                 getAreas()
                 loading.value = false
-                RegistroTipoArea.value = false 
-                tipoArea.value ="" 
+                RegistroTipoRepresentante.value = false  
+                tipoRepresentante.value =""
+                prioridadRepresentante.value = 0
               $q.loading.hide()
               
             }else{
@@ -265,9 +292,10 @@ export default defineComponent({
       //Metodo edit para editar los registros
         onEdit(){
           $q.loading.show()
-          const idT = idEditarArea.value;
-          api.put("/TiposAreas/"+idT,{
-              tipo: editarArea.value
+          const idT = idEditarRepresentante.value;
+          api.put("/TiposRepresentantes/"+idT,{
+              tipo: editarRepresentante.value,
+              prioridad: editarPrioridad.value
           }).then(function (respuesta){   
             let{data,success} = respuesta.data         
             if(respuesta.status == 200 && success == true){        
@@ -278,10 +306,10 @@ export default defineComponent({
                 progress: true,                            
               })            
               loading.value = true
-              rowsareas.value = [  ]
+              rowsrepresentante.value = [  ]
               getAreas()
               loading.value = false
-              EditarTipoArea.value = false
+              EditarTipoRepresentante.value = false
              $q.loading.hide()
             }else{
               $q.notify({
@@ -296,8 +324,8 @@ export default defineComponent({
           },
       
        exportTable () {
-          const content = [columnsareas.map(col => wrapCsvValue(col.label))].concat(
-          rowsareas.value.map(row => columnsareas.map(col => wrapCsvValue(
+          const content = [columnsrepresentantes.map(col => wrapCsvValue(col.label))].concat(
+          rowsrepresentante.value.map(row => columnsrepresentantes.map(col => wrapCsvValue(
               typeof col.field === 'function'
               ? col.field(row)
               : row[ col.field === void 0 ? col.name : col.field ],
