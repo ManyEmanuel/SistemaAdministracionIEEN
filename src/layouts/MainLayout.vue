@@ -126,14 +126,29 @@ const linksList = [
   
   {
     title: 'CÁTALOGOS DE TIPOS',
-    icon: 'list_alt',
+    icon: 'menu_book',
     link: {name:'CatalogosTipos'}
   },
 
   {
     title: 'CATÁLOGOS PRINCIPALES',
-    icon: 'list_alt',
+    icon: 'menu_book',
     link: {name:'CatalogosPrincipal'}
+  },
+  {
+    title: 'PARTIDOS POLITICOS',
+    icon: 'groups',
+    link: {name:'PartidosPoliticos'}
+  },
+  {
+    title: 'EMPLEADOS',
+    icon: 'person',
+    link: {name:'CatalogosTipos'}
+  },
+  {
+    title: 'CONFIGURACIONES',
+    icon: 'build',
+    link: {name:'CatalogosTipos'}
   },
 
 ]

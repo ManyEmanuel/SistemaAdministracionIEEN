@@ -2,11 +2,11 @@
           <!-- Aqui inicia el template con la tabla -->       
   <div class="row q-pa-sm q-gutter-md">     
       <div class="col-12">   
-        <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroRequisito = true, limpiarRegistro()"/>
+        <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroTratamiento = true, limpiarRegistro()"/>
           <q-table
-              title="Registro de requisitos"
-              :rows="rowsrequisitos"
-              :columns="columnsrequisitos"
+              title="Registro de tratamiento"
+              :rows="rowstratamiento"
+              :columns="columnstratamiento"
               :filter="textbuscar"
               row-key ="id"
               color="purple-ieen"
@@ -31,18 +31,16 @@
                     :key="col.name"
                     :props="props"
                   >
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeleteRequisito(col.value)"> 
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeleteTratamiento(col.value)"> 
                     <q-tooltip>
                       Borrar registro
                     </q-tooltip>
                   </q-btn>
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="edit" @click="EditarRequisitoMetodo(col.value)">
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="edit" @click="EditarTratamientoMetodo(col.value)">
                     <q-tooltip>
                       editar registro
                     </q-tooltip>
                   </q-btn>
-                  <label v-else-if="col.name === 'activo' && col.value ===true"> Activo</label>
-                  <label v-else-if="col.name === 'activo' && col.value ===false"> Desactivado</label>
                   <label v-else>{{col.value}}</label>
                   </q-td>
                 </q-tr>
@@ -51,7 +49,7 @@
       </div>
   </div>
        <!-- Dialog para el registro de  tipo de area -->
-    <q-dialog v-model="RegistroRequisito" persistent transition-show="scale" transition-hide="scale">
+    <q-dialog v-model="RegistroTratamiento" persistent transition-show="scale" transition-hide="scale">
       <q-card style="width: 700px; max-width: 80vw;">
         <q-card-section>
           <div class="text-h6">Registro de puesto</div>
@@ -65,8 +63,8 @@
                 <div class="col">
                   <q-input
                     filled
-                    v-model="nombreRequisito"
-                    label="Nombre del requisito"
+                    v-model="nombreTratamiento"
+                    label="Nombre del tratamiento"
                     lazy-rules
                     :rules="[ val => val && val.length > 0 || 'Por favor ingresa un nombre']"
                   />  
@@ -74,17 +72,20 @@
               </div>
               <div class="q-gutter-sm row items-start">
                 <div class="col">
-                  <q-checkbox 
-                    v-model="activoRequisito" 
-                    label="Activar requisito"
-                    color="purple-ieen"
-                    
-                  />    
-                </div>              
+                  <q-input
+                    filled
+                    v-model="siglasTratamiento"
+                    label="Abreviatura del tratamiento"
+                    lazy-rules
+                    :rules="[ val => val && val.length > 0 || 'Por favor ingresa un nombre']"
+                  />   
+                </div>   
+                <div class="col">
+                </div>           
               </div>           
                         
               <q-card-actions align="right">
-                <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroRequisito = false" />
+                <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroTratamiento = false" />
                 <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />        
               </q-card-actions>
           </q-form>
@@ -93,7 +94,7 @@
     </q-dialog> 
 
        <!-- Dilog pata la edición del tipo de area -->
-    <q-dialog v-model="EditarRequisito" persistent transition-show="scale" transition-hide="scale">
+    <q-dialog v-model="EditarTratamiento" persistent transition-show="scale" transition-hide="scale">
         <q-card style="width: 700px; max-width: 80vw;">
           <q-card-section>
             <div class="text-h6">Editar puesto</div>
@@ -103,13 +104,13 @@
                 @submit="onEdit"
                 class="q-gutter-md"
             >
-              <q-input  v-show="false" v-model="idrequisito" />
+              <q-input  v-show="false" v-model="idtratamiento" />
               <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
-                    v-model="nombreRequisito"
-                    label="Nombre del requisito"
+                    v-model="nombreTratamiento"
+                    label="Nombre del tratamiento"
                     lazy-rules
                     :rules="[ val => val && val.length > 0 || 'Por favor ingresa un nombre']"
                   />  
@@ -117,15 +118,19 @@
               </div>
               <div class="q-gutter-sm row items-start">
                 <div class="col">
-                  <q-checkbox 
-                    v-model="activoRequisito" 
-                    label="Activar requisito"
-                    color="purple-ieen"
-                  />
-                </div>               
-              </div>                  
+                  <q-input
+                    filled
+                    v-model="siglasTratamiento"
+                    label="Abreviatura del tratamiento"
+                    lazy-rules
+                    :rules="[ val => val && val.length > 0 || 'Por favor ingrese siglas']"
+                  />   
+                </div>   
+                <div class="col">
+                </div>           
+              </div>            
                 <q-card-actions align="right">
-                  <q-btn label="Cancelar" type="reset" color="negative"   @click="EditarRequisito = false" />
+                  <q-btn label="Cancelar" type="reset" color="negative"   @click="EditarTratamiento = false" />
                   <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />             
                 </q-card-actions>
               </q-form>
@@ -141,34 +146,32 @@ import { exportFile, useQuasar} from 'quasar'
 import {api} from '../../../boot/axios.js'
 
 
-const columnsrequisitos = [                               
+const columnstratamiento = [                               
                 
-                { name: 'nombre', align: 'center', label: 'Nombre del requisito', field: 'nombre', sortable: true, },
-                { name: 'activo', align: 'center', label: 'Estatus del requisito', field: 'activo', sortable: true, },
+                { name: 'nombre', align: 'center', label: 'Titulo del tratamiento', field: 'nombre', sortable: true, },
+                { name: 'siglas', align: 'center', label: 'Abreviatura del tratamiento', field: 'siglas', sortable: true, },
                 { name: 'id', align: 'center', label: 'Opciones', field: 'id' },
                 
             ]
 
 
 export default defineComponent({
-  name: 'TemplateRequisitos',
+  name: 'TemplateTratamiento',
   
   setup(){
     const $q = useQuasar()
     //Variables de guardado y edición
-    const idrequisito = ref('')
-    const nombreRequisito = ref('')
-    const activoRequisito = ref(false)
+    const idtratamiento = ref('')
+    const nombreTratamiento = ref('')
+    const siglasTratamiento = ref(false)
     //---------------------------------------------------------------------------//
     //
     const textbuscar = ref('')
-    const rowsrequisitos = ref([])
+    const rowstratamiento = ref([])
     const datos=ref([]) 
-    const idEditarArea = ref("")
-    const editarArea = ref("")
     const loading = ref(true)
-    const RegistroRequisito = ref(false)
-    const EditarRequisito = ref(false)
+    const RegistroTratamiento = ref(false)
+    const EditarTratamiento = ref(false)
     const pagination = ref({
         page: 1,
         rowsPerPage: 10,
@@ -178,32 +181,32 @@ export default defineComponent({
     )
     // Este es el metodo para listar en tabla
     const getAreas = async () => {
-      api.get('/DocumentosRequeridos').then(res => {  
+      api.get('/Tratamientos').then(res => {  
         let {data} = res.data
         data.forEach(reg => {
             let obj = {
                         "id":reg.id,
-                        "nombre":reg.nombre,
-                        "activo":reg.activo,        
+                        "nombre":reg.titulo,
+                        "siglas":reg.abreviatura,        
                       };
-            rowsrequisitos.value.push(obj)
+            rowstratamiento.value.push(obj)
         })
       })      
       loading.value = false
     }
     getAreas()
 
-    const EditarRequisitoMetodo = function(id){
-      EditarRequisito.value = true    
-      api.get('/DocumentosRequeridos/'+id).then(function(res) {  
+    const EditarTratamientoMetodo = function(id){
+      EditarTratamiento.value = true    
+      api.get('/Tratamientos/'+id).then(function(res) {  
         let {data} = res.data
-            idrequisito.value = data.id
-            nombreRequisito.value = data.nombre
-            activoRequisito.value = data.activo
+            idtratamiento.value = data.id
+            nombreTratamiento.value = data.titulo
+            siglasTratamiento.value = data.abreviatura
       });      
     }  
     // Este es el metodo para eliminar registro
-    const DeleteRequisito = function(id){ 
+    const DeleteTratamiento = function(id){ 
       $q.dialog({
         title: 'Eliminar registro',
         icon: 'Warning',
@@ -215,11 +218,11 @@ export default defineComponent({
           color: 'negative',
           label: 'Cancelar'
         },
-        message: '¿Esta seguro de eliminar este requisito?',
+        message: '¿Esta seguro de eliminar este tratamiento?',
         persistent: true
       }).onOk(() => {
          $q.loading.show()
-          api.delete('/DocumentosRequeridos/'+id).then(function (respuesta){    
+          api.delete('/Tratamientos/'+id).then(function (respuesta){    
             let{data,success} = respuesta.data        
             if(respuesta.status == 200 && success == true){        
               $q.notify({
@@ -230,10 +233,10 @@ export default defineComponent({
               })
             
               loading.value = true
-              rowsrequisitos.value = [  ]
+              rowstratamiento.value = [  ]
               getAreas()
               loading.value = false
-              RegistroRequisito.value = false
+              RegistroTratamiento.value = false
                $q.loading.hide()
             
            
@@ -253,37 +256,35 @@ export default defineComponent({
     //Este es el metodo para editar registro
 
     const limpiarRegistro = function(){
-        idrequisito.value = ""
-        nombreRequisito.value=""
-        activoRequisito.value=false
+        idtratamiento.value = ""
+        nombreTratamiento.value=""
+        siglasTratamiento.value=""
     }
        
      
     return{
        // Variables de guardado y edición
-       nombreRequisito,
-       activoRequisito,
-       idrequisito,
+       nombreTratamiento,
+       siglasTratamiento,
+       idtratamiento,
        textbuscar,
-       editarArea,
-       idEditarArea,
-       columnsrequisitos,
-       rowsrequisitos,
-       RegistroRequisito,
-       EditarRequisito,
-       DeleteRequisito,
+       columnstratamiento,
+       rowstratamiento,
+       RegistroTratamiento,
+       EditarTratamiento,
+       DeleteTratamiento,
        pagination,
        loading,
        limpiarRegistro,
-       EditarRequisitoMetodo,
+       EditarTratamientoMetodo,
        datos,
       //MEtodo submit para guardar registro
        onSubmit(){ 
           $q.loading.show()
-          api.post("/DocumentosRequeridos",{
+          api.post("/Tratamientos",{
                   
-                   nombre: nombreRequisito.value,
-                   activo: activoRequisito.value,
+                   titulo: nombreTratamiento.value,
+                   abreviatura: siglasTratamiento.value,
           }).then(function (respuesta){       
             console.log(respuesta)
               let{data,success} = respuesta.data
@@ -296,10 +297,10 @@ export default defineComponent({
                   progress: true,                            
                 })                                 
                 loading.value = true
-                rowsrequisitos.value = [  ]
+                rowstratamiento.value = [  ]
                 getAreas()
                 loading.value = false
-                RegistroRequisito.value = false 
+                RegistroTratamiento.value = false 
                 limpiarRegistro()
               $q.loading.hide()
               
@@ -319,10 +320,10 @@ export default defineComponent({
       //Metodo edit para editar los registros
         onEdit(){
           $q.loading.show()
-          const idT = idrequisito.value;
-          api.put("/DocumentosRequeridos/"+idT,{
-                nombre: nombreRequisito.value,
-                activo: activoRequisito.value,
+          const idT = idtratamiento.value;
+          api.put("/Tratamientos/"+idT,{
+                titulo: nombreTratamiento.value,
+                abreviatura: siglasTratamiento.value,
           }).then(function (respuesta){   
             let{data,success} = respuesta.data         
             if(respuesta.status == 200 && success == true){        
@@ -333,10 +334,10 @@ export default defineComponent({
                 progress: true,                            
               })            
               loading.value = true
-              rowsrequisitos.value = [  ]
+              rowstratamiento.value = [  ]
               getAreas()
               loading.value = false
-              EditarRequisito.value = false
+              EditarTratamiento.value = false
               limpiarRegistro()
              $q.loading.hide()
             }else{
@@ -352,8 +353,8 @@ export default defineComponent({
           },
 
        exportTable () {
-          const content = [columnsrequisitos.map(col => wrapCsvValue(col.label))].concat(
-          rowsrequisitos.value.map(row => columnsrequisitos.map(col => wrapCsvValue(
+          const content = [columnstratamiento.map(col => wrapCsvValue(col.label))].concat(
+          rowstratamiento.value.map(row => columnstratamiento.map(col => wrapCsvValue(
               typeof col.field === 'function'
               ? col.field(row)
               : row[ col.field === void 0 ? col.name : col.field ],

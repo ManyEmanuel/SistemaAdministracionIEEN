@@ -15,6 +15,8 @@
         <q-tab name="Areas" label="Areas" />
         <q-tab name="Puestos" label="Puestos" />
         <q-tab name="Requisitos" label="Requisitos" />
+        <q-tab name="Tratamientos" label="Tratamientos" />
+        <q-tab name="TabuladorViaticos" label="Tabulador de viaticos" />
 
       </q-tabs>
 
@@ -32,7 +34,13 @@
 
         <q-tab-panel name="Requisitos">
             <TemplateRequisitos/>
-        </q-tab-panel>       
+        </q-tab-panel>  
+         <q-tab-panel name="Tratamientos">       
+            <TemplateTratamiento/>
+        </q-tab-panel> 
+        <q-tab-panel name="TabuladorViaticos">       
+            <TemplateTabuladorViatico/>
+        </q-tab-panel>     
       </q-tab-panels>
     </q-card>
   </div>
@@ -43,8 +51,9 @@
 import { defineComponent,ref } from 'vue';
 import TemplateArea from '../Components/CatalogosPrincipal/TemplateArea.vue';
 import TemplatePuestos from '../Components/CatalogosPrincipal/TemplatePuestos.vue';
-import TemplateTipoMovimiento from '../Components/CatalogosTipos/TemplateTipoMovimiento.vue';
 import TemplateRequisitos from '../Components/CatalogosPrincipal/TemplateRequisitos.vue'
+import TemplateTratamiento from '../Components/CatalogosPrincipal/TemplateTratamiento.vue'
+import TemplateTabuladorViatico from '../Components/CatalogosPrincipal/TemplateTabuladorViatico.vue'
 
 
 
@@ -55,6 +64,8 @@ export default defineComponent({
       TemplateArea,
       TemplatePuestos,
       TemplateRequisitos,
+      TemplateTratamiento,
+      TemplateTabuladorViatico,
   },
   setup(){   
     return{

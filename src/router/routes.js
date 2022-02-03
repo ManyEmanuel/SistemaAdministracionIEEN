@@ -6,6 +6,7 @@ const routes = [
     children: [
      // { path: '', component: () => import('pages/Index.vue') },
      // { path: 'Componentes', name:'botones', component: () => import('pages/Components/Botones.vue') },
+      { path: '', name:'PageIndex',component: () => import('src/pages/Index.vue') },
      // { Catalogos de tipos
       { path: '', name:'CatalogosTipos',component: () => import('src/pages/Principal/CatalogosTipos.vue') },
       { path: '', name:'TemplateTipoArea',component: () => import('src/pages/Components/CatalogosTipos/TemplateTipoArea.vue') },
@@ -18,6 +19,13 @@ const routes = [
     { path: '', name:'TemplateArea',component: () => import('src/pages/Components/CatalogosPrincipal/TemplateArea.vue') },
     { path: '', name:'TemplatePuestos',component: () => import('src/pages/Components/CatalogosPrincipal/TemplatePuestos.vue') },
     { path: '', name:'TemplateRequisitos',component: () => import('src/pages/Components/CatalogosPrincipal/TemplateRequisitos.vue') },
+    { path: '', name:'TemplateTratamiento',component: () => import('src/pages/Components/CatalogosPrincipal/TemplateTratamiento.vue') },
+    { path: '', name:'TemplateTabuladorViatico',component: () => import('src/pages/Components/CatalogosPrincipal/TemplateTabuladorViatico.vue') },
+
+    // Catalogos Partidos Politicos
+    { path: '', name:'PartidosPoliticos',component: () => import('src/pages/Principal/PartidosPoliticos.vue') },
+    {path:'', name:'TemplatePartidos,', component:() => import('src/pages/Components/PartidosPoliticos/TemplatePartidos.vue')},
+    
      // { path: '', name:'ejemplo2', component: () => import('pages/Ejemplo2.vue') }
     ]
   },
