@@ -85,6 +85,19 @@
                 </div>
             </div>
             <div class="q-gutter-sm row items-start">
+              <div class ="col">
+                <q-file
+                 filled 
+                  v-model="logoPartido" 
+                  label="Logo del partido" 
+                  accept=".jpg, image/*"
+                  @rejected="onRejected"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="add_photo_alternate" />
+                  </template>
+                </q-file>
+              </div>
               <div class="col">
                 <q-input
                   filled
@@ -136,24 +149,7 @@
                     />   
                 </div>
             </div>
-            <div class="q-gutter-sm row items-start">
-              <div class="col">
-                <q-uploader
-                  color ="gray-ieen-3"
-                  label="Cargar Logo"
-                  accept=".jpg, image/*"
-                  @rejected="onRejected"
-                  @added ="getImage"
-                />
-              </div>
-              <div class="col">
-                <q-input
-                  type="file"
-                  name="banner"
-                  ref="cargafoto"
-                />
-              </div>
-            </div>
+            
             
             <q-card-actions align="right">
               <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroPartido = false" />
@@ -175,7 +171,7 @@
                 @submit="onEdit"
                 class="q-gutter-md"
             >
-            <q-input  v-show="false" v-model="idPartido" />
+            <q-input v-show="false" v-model="idPartido" />
                 <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
@@ -198,7 +194,8 @@
             </div>
             <div class="q-gutter-sm row items-start">
               <div class="col">
-                <q-file filled 
+                <q-file
+                 filled 
                   v-model="logoPartido" 
                   label="Logo del partido" 
                   accept=".jpg, image/*"
@@ -307,7 +304,6 @@ export default defineComponent({
     const editarEmpleado = ref("")
     const editarDescripcion = ref("")
     const getImage= ref()
-    let file = ref([0])
     const loading = ref(true)
     const RegistroPartido = ref(false)
     const EditarPartido = ref(false)
@@ -394,9 +390,9 @@ export default defineComponent({
             siglasPartido.value = data.siglas 
             logoPartido.value = data.logo_Url
             pantoneF.value = data.pantone_Fondo
-            pantoneL.value = date.pantone_Letra
-            emailPartido = date.email
-            telPartido = date.telefono
+            pantoneL.value = data.pantone_Letra
+            emailPartido.value = data.email
+            telPartido.value = data.telefono
 
         })
     }
@@ -433,23 +429,21 @@ export default defineComponent({
        pagination,
        loading,
        getImage,
-       file,
        
       
              
        onSubmit(){ 
           
           $q.loading.show()
-
           const formData = new FormData();
           formData.append("nombre", nombrePartido.value)
           formData.append("siglas", siglasPartido.value)
-          formData.append("logo_Url", cargafoto)
+          formData.append("logo",logoPartido.value)
           formData.append("pantone_Fondo", pantoneF.value)
           formData.append("pantone_Letra", pantoneL.value)
           formData.append("email", emailPartido.value)
           formData.append("telefono", telPartido.value)
-          api.post("/Partidos",formData).then(function (respuesta){       
+          api.post("/Partidos",formData,{headers:{'Content-Type': 'multipart/form-data'}}).then(function (respuesta){       
               let{data,success} = respuesta.data
             if(respuesta.status == 200 && success == true){
               
@@ -482,16 +476,16 @@ export default defineComponent({
       //Metodo edit para editar los registros
         onEdit(){
           $q.loading.show()
+          const formData = new FormData();
+          formData.append("nombre", nombrePartido.value)
+          formData.append("siglas", siglasPartido.value)
+          formData.append("logo",logoPartido.value)
+          formData.append("pantone_Fondo", pantoneF.value)
+          formData.append("pantone_Letra", pantoneL.value)
+          formData.append("email", emailPartido.value)
+          formData.append("telefono", telPartido.value)
           const idT = idPartido.value;
-          api.put("/Partidos/"+idT,{
-            nombre: nombrePartido.value,
-            siglas:siglasPartido.value ,
-            logo_Url:logoPartido.value,
-            pantone_Fondo:pantoneF.value,
-            pantone_Letra:pantoneL.value,
-            email :emailPartido.value,
-            telefono:telPartido.value
-          }).then(function (respuesta){   
+          api.put("/Partidos/"+idT,formData,{headers:{'Content-Type': 'multipart/form-data'}}).then(function (respuesta){   
             let{data,success} = respuesta.data         
             if(respuesta.status == 200 && success == true){        
               $q.notify({
