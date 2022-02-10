@@ -23,10 +23,13 @@ const routes = [
     { path: '', name:'TemplateTabuladorViatico',component: () => import('src/pages/Components/CatalogosPrincipal/TemplateTabuladorViatico.vue') },
 
     // Catalogos Partidos Politicos
-    { path: '', name:'PartidosPoliticos',component: () => import('src/pages/Principal/PartidosPoliticos.vue') },
-    {path:'', name:'TemplatePartidos,', component:() => import('src/pages/Components/PartidosPoliticos/TemplatePartidos.vue')},
+    { path:'', name:'PartidosPoliticos',component: () => import('src/pages/Principal/PartidosPoliticos.vue') },
+    { path:'', name:'TemplatePartidos,', component:() => import('src/pages/Components/PartidosPoliticos/TemplatePartidos.vue')},
+    { path:'', name:'TemplateIntegracionPartidos,', component:() => import('src/pages/Components/PartidosPoliticos/TemplateIntegracionPartidos.vue')},
     
-     // { path: '', name:'ejemplo2', component: () => import('pages/Ejemplo2.vue') }
+    //Empleados
+    { path:'', name:'Empleados', component:() => import('src/pages/Principal/Empleados.vue')},
+    { path:'', name:'TemplateEmpleados', component:() => import('src/pages/Components/Empleados/TemplateEmpleados.vue')},// { path: '', name:'ejemplo2', component: () => import('pages/Ejemplo2.vue') }
     ]
   },
 

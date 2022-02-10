@@ -25,7 +25,7 @@
             <TemplatePartidos/>
         </q-tab-panel>             
         <q-tab-panel name="Integracion">
-  
+            <TemplateIntegracionPartidos/>
         </q-tab-panel>    
       </q-tab-panels>
     </q-card>
@@ -35,11 +35,13 @@
 <script>
 import { defineComponent,ref } from 'vue';
 import TemplatePartidos from 'pages/Components/PartidosPoliticos/TemplatePartidos.vue'
+import TemplateIntegracionPartidos from 'pages/Components/PartidosPoliticos/TemplateIntegracionPartidos.vue'
 
 export default defineComponent({
   name: 'PartidosPoliticos',
   components : {
     TemplatePartidos,
+    TemplateIntegracionPartidos,
   },
   setup(){   
     return{

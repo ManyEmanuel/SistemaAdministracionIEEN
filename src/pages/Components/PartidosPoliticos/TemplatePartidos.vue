@@ -4,7 +4,7 @@
       <div class="col-12">   
         <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroPartido = true,limpiarRegistro()"/>
           <q-table
-              title="Tipos de Empleado"
+              title="Partidos politicos"
               :rows="rowspartidos"
               :columns="columnspartidos"
               :filter="textbuscar"

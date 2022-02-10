@@ -143,7 +143,7 @@ const linksList = [
   {
     title: 'EMPLEADOS',
     icon: 'person',
-    link: {name:'CatalogosTipos'}
+    link: {name:'Empleados'}
   },
   {
     title: 'CONFIGURACIONES',

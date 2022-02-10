@@ -297,8 +297,8 @@ export default defineComponent({
             emailArea.value = data.email
             extArea.value = data.extension
             const filtro1 = itemsArea.value
-            const {label} = filtro1.find(elemento => elemento.value === data.tipo_Area_Id)
-            tipoArea.value = label
+            let valor = filtro1.find(elemento => elemento.value === data.tipo_Area_Id)
+            tipoArea.value = valor
             
       });  
 
@@ -442,16 +442,10 @@ export default defineComponent({
         onEdit(){
           $q.loading.show()
           const {value} = tipoArea.value
-          let idTipo = value
-          
-            if(typeof idTipo === 'string'){
-              const filtro1 = itemsArea.value
-                const {value} = filtro1.find(elemento => elemento.label === tipoArea.value)
-                idTipo = value           
-            }  
+         
           const idT = idarea.value;
           api.put("/Areas/"+idT,{
-               tipo_Area_Id: idTipo,
+               tipo_Area_Id: value,
                    nombre: nombreArea.value,
                    siglas: siglasArea.value,
                    email: emailArea.value,
