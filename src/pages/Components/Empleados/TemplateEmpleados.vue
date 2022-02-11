@@ -129,6 +129,7 @@
                             label="Foto del empleado" 
                             accept=".jpg, image/*"
                             @rejected="onRejected"
+                            @change="pruebaImagen"
                           >
                           <template v-slot:prepend>
                             <q-icon name="add_photo_alternate" />
@@ -143,7 +144,9 @@
                           v-model="curpEmpleado"
                           label="Curp del empleado"
                           lazy-rules
+                          @input="v => { curpEmpleado = v.toUpperCase() }"
                           :rules="[ val => val && val.length > 17 || 'Por favor ingresa la curp']"
+                          maxlength="18"
                         />   
                       </div>
                       <div class="col">
@@ -151,8 +154,10 @@
                             filled
                             v-model="rfcEmpleado"
                             label="RFC del Empleado"
+                            @input="v => { rfcEmpleado = v.toUpperCase() }"
                             lazy-rules
                             :rules="[ val => val && val.length > 12 || 'Por favor ingresa el RFC']"
+                            maxlength="13"
                           />   
                       </div>
                   </div>
@@ -260,10 +265,11 @@
                     <div class="col q-pa-sm">
                       <q-file
                         filled 
-                          v-model="item.value" 
-                          :label="item.label" 
+                          v-model="nameModelo[item.index]" 
+                          :label="item.index" 
                           accept=".jpg,.pdf, image/*"
                           @rejected="onRejected"
+
                       >
                           <template v-slot:prepend>
                             <q-icon name="post_add" />
@@ -298,7 +304,7 @@
 
 <script>
 import { defineComponent,ref } from 'vue';
-import { exportFile, useQuasar} from 'quasar'
+import { event, exportFile, useQuasar} from 'quasar'
 import {api} from '../../../boot/axios.js'
 
 
@@ -336,6 +342,7 @@ export default defineComponent({
     const telefonoEmpleado = ref()
     const sexoEmpleado = ref()
     const activoEmpleado = ref(false)
+    const pruebaImagen = event => console.log(`------------------${event}`)
     //---------------------------------------------------------------------------//
     //
     const step = ref(1)
@@ -344,6 +351,7 @@ export default defineComponent({
     const ventana3 = ref(false)
     const textbuscar = ref('')
     const rowsempleados = ref([])
+    const nameModelo = ref([])
     const itemTipoEmp = ref([])
     const itemTratamiento = ref([])
     const itemArea = ref([])
@@ -465,6 +473,7 @@ export default defineComponent({
       itemPuesto.value=[]
       itemTratamiento.value=[]
       itemRequisito.value=[]
+      nameModelo.value=[]
       api.get('/Areas').then(function(respuesta){
         let{data} = respuesta.data;
         data.forEach((item)=>{
@@ -503,14 +512,23 @@ export default defineComponent({
       });
       api.get('/DocumentosRequeridos').then(function(respuesta){
         let{data} = respuesta.data;
+        var index = 0;
         data.forEach((item)=>{
           itemRequisito.value.push({
             label: item.nombre,
-            value: item.id
+            value: item.id,
+            index: index,
+            
           });
+          let fracc = item.nombre.split(' ')
+          nameModelo.value.push({
+            value: fracc[0]
+          });
+          index++
         })
+        
       });
-      console.log(itemRequisito.value)
+      console.log(itemRequisito.value, nameModelo.value)
     }
        
      
@@ -532,12 +550,14 @@ export default defineComponent({
         telefonoEmpleado,
         sexoEmpleado,
         activoEmpleado,
+        pruebaImagen,
        // Variables de guardado y edición
        step,
        ventana1,
        ventana2,
        ventana3,
        textbuscar,
+       nameModelo,
        itemTipoEmp,
        itemTratamiento,
        itemArea,
@@ -557,8 +577,10 @@ export default defineComponent({
        EditarRequisitoMetodo,
       //MEtodo submit para guardar registro
        onSubmit(){ 
-          $q.loading.show()
+          $q.loading.show()          
           const formData = new FormData();
+          var idEr = 0
+         
           formData.append("nombres", nombresEmpleado.value)
           formData.append("apellido_Paterno", apellidoPaterno.value)
           formData.append("apellido_Materno", apellidoMaterno.value)
@@ -576,9 +598,9 @@ export default defineComponent({
           formData.append("tipo_Empleado_Id", idTipoEmpleado.value.value)
           api.post("/Empleados",formData,{headers:{'Content-Type': 'multipart/form-data'}}).then(function (respuesta){       
             console.log(respuesta)
-              let{data,success} = respuesta.data
+              let{data,success,id} = respuesta.data   
+              idEr=id      
             if(respuesta.status == 200 && success == true){
-              
                 $q.notify({
                   type: 'positive',
                   message: data,
@@ -602,7 +624,18 @@ export default defineComponent({
               })
              $q.loading.hide()
             }              
-          })     
+          })
+          var num = itemRequisito.value
+          var {label, value} = num[0]
+          const DocData = new FormData();
+            DocData.append("requisito_Id", value)
+            DocData.append("empleado_Id",idEr)
+            DocData.append("titulo",label)
+            DocData.append("documento",fotoEmpleado.value)
+            console.log(DocData)
+              api.post("/DocumentosEmpleados",DocData,{headers:{'Content-Type':'multipart/form-data'}}).then(function (respuesta1){       
+              console.log(respuesta1.data)}
+            )     
        },
 
       
