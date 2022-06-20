@@ -1,6 +1,6 @@
-<template>         <!-- Aqui inicia el template con la tabla -->       
-  <div class="row q-pa-sm q-gutter-md">     
-      <div class="col-12">   
+<template>         <!-- Aqui inicia el template con la tabla -->
+  <div class="row q-pa-sm q-gutter-md">
+      <div class="col-12">
         <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroIntegracionMetodo()"/>
           <q-table
               title="Integración de partidos politicos"
@@ -12,7 +12,7 @@
               :loading="loading"
               v-model:pagination="pagination"
               no-data-label="No se encontraron registros"
-              rows-per-page-label="Registros por página"                                               
+              rows-per-page-label="Registros por página"
               >
               <template v-slot:top-right>
                 <q-input v-model="textbuscar" dense label="Buscar"  class="q-pr-md">
@@ -24,18 +24,18 @@
               </template >
               <template v-slot:body ="props">
                 <q-tr :props="props">
-                  <q-td 
+                  <q-td
                     v-for="col in props.cols"
                     :key="col.name"
                     :props="props"
                   >
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="visibility" @click="VerIntegracion(col.value)"> 
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="visibility" @click="VerIntegracion(col.value)">
                     <q-tooltip>
                       Ver integracion
                     </q-tooltip>
                   </q-btn>
                   <!--
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeleteIntegracion(col.value)"> 
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeleteIntegracion(col.value)">
                     <q-tooltip>
                       Borrar registro
                     </q-tooltip>
@@ -70,21 +70,21 @@
             >
             <div class="q-gutter-sm row items-start">
                 <div class="col">
-                  <q-select 
+                  <q-select
                     filled
                     v-model="partidoId"
-                    :options="itemsPartidos" 
-                    label="Partido Politico" 
+                    :options="itemsPartidos"
+                    label="Partido Politico"
                      lazy-rules
                     :rules="[val => !!val || 'Por favor seleccione un partido politico']"
                   />
                 </div>
                 <div class="col">
-                  <q-select 
+                  <q-select
                     filled
                     v-model="idTipoRepresentante"
-                    :options="itemsRepresentante" 
-                    label="Tipo de representante" 
+                    :options="itemsRepresentante"
+                    label="Tipo de representante"
                      lazy-rules
                     :rules="[val => !!val || 'Por favor selecciona un tipo de representante']"
                   />
@@ -95,11 +95,11 @@
                   <q-input
                     filled
                     v-model="nombreRepresentante"
-                    label="Nombre(s)" 
+                    label="Nombre(s)"
                     lazy-rules
                     :rules="[ val => val && val.length > 0 || 'Por favor escriba un nombre']"
-                    
-                  />   
+
+                  />
               </div>
              <div class="col">
                   <q-input
@@ -108,15 +108,15 @@
                     label="Apellido Paterno"
                     lazy-rules
                     :rules="[ val => val && val.length > 0 || 'Por favor escriba un apellido']"
-                  />   
+                  />
               </div>
               <div class="col">
                   <q-input
                     filled
                     v-model="apeMaterno"
                     label="Apellido Materno"
-                    
-                  />   
+
+                  />
                 </div>
             </div>
             <div class="q-gutter-sm row items-start">
@@ -126,7 +126,7 @@
                     v-model="emailRepresentante"
                     label="Email del representante "
                     type="email"
-                  />   
+                  />
                 </div>
                 <div class="col">
                   <q-input
@@ -134,41 +134,41 @@
                       v-model="telRepresentante"
                       label="Telefono del representante"
                       type="tel"
-                    />   
+                    />
                 </div>
-               
+
             </div>
              <div class="q-gutter-sm row items-start">
               <div class="col">
-                 <q-input 
-                  v-model="fechaInicio" 
+                 <q-input
+                  v-model="fechaInicio"
                   filled
-                   type="date" 
+                   type="date"
                    hint="Fecha de registro"
                     />
                 </div>
                 <div class="col">
-                   <q-input 
-                      v-model="fechaFinal" 
+                   <q-input
+                      v-model="fechaFinal"
                       filled
-                      type="date" 
+                      type="date"
                       hint="Fecha fin del registro"
-                    /> 
+                    />
                 </div>
                 <div class="col"></div>
-            </div> 
+            </div>
             <q-card-actions align="right">
               <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroIntegracion = false" />
-              <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />        
+              <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />
             </q-card-actions>
           </q-form>
         </q-card-section>
       </q-card>
-    </q-dialog> 
+    </q-dialog>
 
        <!-- Dilog pata la edición del tipo de area -->
     <q-dialog v-model="EditarIntegracion" persistent transition-show="scale" transition-hide="scale">
-        
+
         <q-card style="width: 700px; max-width: 80vw;">
             <q-card-section>
               <div class="text-h6">Editar información de representante</div>
@@ -181,21 +181,21 @@
             <q-input v-show="false" v-model="idIntegracion" />
              <div class="q-gutter-sm row items-start">
                 <div class="col">
-                  <q-select 
+                  <q-select
                     filled
                     v-model="partidoId"
-                    :options="itemsPartidos" 
-                    label="Partido Politico" 
+                    :options="itemsPartidos"
+                    label="Partido Politico"
                      lazy-rules
                     :rules="[val => !!val || 'Por favor seleccione un partido politico']"
                   />
                 </div>
                 <div class="col">
-                  <q-select 
+                  <q-select
                     filled
                     v-model="idTipoRepresentante"
-                    :options="itemsRepresentante" 
-                    label="Tipo de representante" 
+                    :options="itemsRepresentante"
+                    label="Tipo de representante"
                      lazy-rules
                     :rules="[val => !!val || 'Por favor selecciona un tipo de representante']"
                   />
@@ -206,11 +206,11 @@
                   <q-input
                     filled
                     v-model="nombreRepresentante"
-                    label="Nombre(s)" 
+                    label="Nombre(s)"
                     lazy-rules
                     :rules="[ val => val && val.length > 0 || 'Por favor escriba un nombre']"
-                    
-                  />   
+
+                  />
               </div>
              <div class="col">
                   <q-input
@@ -219,15 +219,15 @@
                     label="Apellido Paterno"
                     lazy-rules
                     :rules="[ val => val && val.length > 0 || 'Por favor escriba un apellido']"
-                  />   
+                  />
               </div>
               <div class="col">
                   <q-input
                     filled
                     v-model="apeMaterno"
                     label="Apellido Materno"
-                    
-                  />   
+
+                  />
                 </div>
             </div>
             <div class="q-gutter-sm row items-start">
@@ -237,7 +237,7 @@
                     v-model="emailRepresentante"
                     label="Email del representante "
                     type="email"
-                  />   
+                  />
                 </div>
                 <div class="col">
                   <q-input
@@ -245,39 +245,39 @@
                       v-model="telRepresentante"
                       label="telefono del representante"
                       type="tel"
-                    />   
+                    />
                 </div>
-                
+
             </div>
              <div class="q-gutter-sm row items-start">
               <div class="col">
-                 <q-input 
-                  v-model="fechaInicio" 
+                 <q-input
+                  v-model="fechaInicio"
                   filled
-                   type="date" 
+                   type="date"
                    hint="Fecha de registro"
                     />
                 </div>
                 <div class="col">
-                   <q-input 
-                      v-model="fechaFinal" 
+                   <q-input
+                      v-model="fechaFinal"
                       filled
-                      type="date" 
+                      type="date"
                       hint="Fecha fin del registro"
-                    /> 
+                    />
                 </div>
                 <div class="col"></div>
             </div>
                 <q-card-actions align="right">
                   <q-btn label="Cancelar" type="reset" color="negative"   @click="EditarIntegracion = false" />
-                  <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />             
+                  <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />
                 </q-card-actions>
               </q-form>
             </q-card-section>
         </q-card>
-    </q-dialog>    
+    </q-dialog>
     <q-dialog v-model="VerIntegracionByPartido" persistent transition-show="scale" transition-hide="scale">
-      
+
        <q-card style="width: 900px; max-width: 80vw;">
          <div class="q-pa-md">
           <h5 class="text-center">{{Etiqueta}}</h5>
@@ -293,7 +293,7 @@
               :loading="loadingI"
               v-model:pagination="paginationI"
               no-data-label="No se encontraron registros"
-              rows-per-page-label="Registros por página"                                               
+              rows-per-page-label="Registros por página"
               >
               <template v-slot:top-right>
                 <q-input v-model="textbuscarI" dense label="Buscar"  class="q-pr-md">
@@ -306,14 +306,14 @@
               </template >
               <template v-slot:body ="propsI">
                 <q-tr :props="propsI">
-                  <q-td 
+                  <q-td
                     v-for="colI in propsI.cols"
                     :key="colI.name"
                     :props="propsI"
                   >
 
-                  
-                  <q-btn v-if="colI.name==='idRepre'" flat round color="purple-ieen" icon="delete" @click="DeleteIntegracion(colI.value)"> 
+
+                  <q-btn v-if="colI.name==='idRepre'" flat round color="purple-ieen" icon="delete" @click="DeleteIntegracion(colI.value)">
                     <q-tooltip>
                       Borrar registro
                     </q-tooltip>
@@ -342,30 +342,31 @@ import { exportFile, useQuasar, date} from 'quasar'
 import {api} from '../../../boot/axios.js'
 
 
-const columnsPartidos = [                
+const columnsPartidos = [
                 { name: 'nombre', align: 'center', label: 'Nombre del partido', field: 'nombre', sortable: true, },
                 { name: 'siglas', align: 'center', label: 'Siglas del partido', field: 'siglas', sortable: true, },
                 { name: 'logo_Url', align: 'center', label: 'Logo del partido', field: 'logo_Url', sortable: true, },
                 { name: 'id', align: 'center', label: 'Opciones', field: 'id' },
-                
-                
+
+
             ]
 const columnsintegracion=[
                 { name: 'nombreRepre', align: 'center', label: 'Nombre del Representante', field: 'nombreRepre', sortable: true, },
                 { name: 'tipoRepre', align: 'center', label: 'Tipo de Representante', field: 'tipoRepre', sortable: true, },
                 { name: 'idRepre', align: 'center', label: 'Opciones', field: 'idRepre' },
-                
+
 
                   ]
 
 
 export default defineComponent({
   name: 'TemplateIntegracionPartidos',
-  
+
   setup(){
-    
+
     const $q = useQuasar()
     const partidoId = ref()
+
     const VerIntegracionByPartido = ref (false)
     const idTipoRepresentante = ref()
     const nombreRepresentante = ref('')
@@ -396,38 +397,38 @@ export default defineComponent({
     )
     // Este es el metodo para listar en tabla
     const getAreas = async () => {
-      api.get('/Partidos').then(res => {  
+      api.get('/Partidos').then(res => {
         let {data} = res.data
         data.forEach(reg => {
             let obj = {
                         "id":reg.id,
-                        "nombre":reg.nombre, 
+                        "nombre":reg.nombre,
                         "siglas": reg.siglas,
-                        "logo_Url": reg.logo_Url                
+                        "logo_Url": reg.logo_Url
                       };
             rowsPartidos.value.push(obj)
         })
-      })      
+      })
       loading.value = false
     }
 
-    
+
     getAreas()
 
     const Integracion = function(id){
       const getIntegracion = async () => {
-        api.get('/IntegracionPartidos/ByPartido/'+id).then(res => {  
+        api.get('/IntegracionPartidos/ByPartido/'+id).then(res => {
           let {data} = res.data
           data.forEach(reg => {
               let obj = {
                           "idRepre":reg.id,
-                          "nombreRepre":reg.nombres + ' ' + reg.apellido_Paterno + ' ' + reg.apellido_Materno, 
+                          "nombreRepre":reg.nombres + ' ' + reg.apellido_Paterno + ' ' + reg.apellido_Materno,
                           "tipoRepre": reg.tipo_Representante,
-                                        
+
                         };
               rowsintegracion.value.push(obj)
-          })            
-        })    
+          })
+        })
     }
     getIntegracion()
     }
@@ -459,7 +460,7 @@ export default defineComponent({
     }
 
     // Este es el metodo para eliminar registro
-    const DeleteIntegracion = function(id){ 
+    const DeleteIntegracion = function(id){
       $q.dialog({
         title: 'Eliminar registro',
         icon: 'Warning',
@@ -475,28 +476,28 @@ export default defineComponent({
         persistent: true
       }).onOk(() => {
          $q.loading.show()
-          api.get('/IntegracionPartidos/'+id).then(function(res) {  
+          api.get('/IntegracionPartidos/'+id).then(function(res) {
                 let {data} = res.data
                 partidoId.value = data.partido_Id
               })
-          api.delete('/IntegracionPartidos/'+id).then(function (respuesta){    
-            let{data,success} = respuesta.data        
-            if(respuesta.status == 200 && success == true){        
+          api.delete('/IntegracionPartidos/'+id).then(function (respuesta){
+            let{data,success} = respuesta.data
+            if(respuesta.status == 200 && success == true){
               $q.notify({
                 type: 'positive',
                 message: data,
                 position: 'top-right',
-                progress: true,                            
+                progress: true,
               })
-                   
+
               loading.value = true
               rowsintegracion.value = [  ]
               Integracion(partidoId.value)
               loading.value = false
               RegistroIntegracion.value = false
                $q.loading.hide()
-            
-           
+
+
             }else{
               $q.notify({
                 type: 'negative',
@@ -506,10 +507,10 @@ export default defineComponent({
               })
                $q.loading.hide()
             }
-          })   
+          })
       })
     }
-  
+
     //Este es el metodo para editar registro
     const EditarIntegracionMetodo = function(id){
       EditarIntegracion.value = true;
@@ -533,7 +534,7 @@ export default defineComponent({
           });
         })
       });
-      api.get('/IntegracionPartidos/'+id).then(function(res) {  
+      api.get('/IntegracionPartidos/'+id).then(function(res) {
         let {data} = res.data
       idIntegracion.value = data.id
       nombreRepresentante.value = data.nombres
@@ -547,21 +548,21 @@ export default defineComponent({
             let itemp = filtro1.find(elemento => elemento.value === data.partido_Id)
             partidoId.value= itemp
          const filtro2 = itemsRepresentante.value
-            let fil2 = filtro2.find(elemento => elemento.value === data.tipo_Representante_Id)         
+            let fil2 = filtro2.find(elemento => elemento.value === data.tipo_Representante_Id)
             idTipoRepresentante.value = fil2
-      })     
+      })
     }
     const VerIntegracion = function(id){
-       
+
         rowsintegracion.value = []
-         api.get('/Partidos/'+id).then(function(res) {  
+         api.get('/Partidos/'+id).then(function(res) {
         let {data} = res.data
           Etiqueta.value = data.nombre
          })
          Integracion(id)
-       VerIntegracionByPartido.value = true; 
-      
-        
+       VerIntegracionByPartido.value = true;
+
+
     }
     const limpiarRegistro = function(){
       idIntegracion.value = ""
@@ -580,7 +581,7 @@ export default defineComponent({
 
     }
     return{
-       
+
        textbuscar,
        textbuscarI,
       partidoId,
@@ -610,11 +611,11 @@ export default defineComponent({
        VerIntegracionByPartido,
        VerIntegracion,
        Etiqueta,
-       
-      
-             
-       onSubmit(){ 
-          
+
+
+
+       onSubmit(){
+
           $q.loading.show()
           let partido = partidoId.value
           let tipoReprenante = idTipoRepresentante.value
@@ -625,25 +626,25 @@ export default defineComponent({
             apellido_Paterno: apePaterno.value,
             apellido_Materno:apeMaterno.value,
             email: emailRepresentante.value,
-            telefono_1: telRepresentante.value,           
+            telefono_1: telRepresentante.value,
             fecha_Inicio: fechaInicio.value,
             fecha_Fin: fechaFinal.value,
-          }).then(function (respuesta){       
+          }).then(function (respuesta){
               let{data,success} = respuesta.data
             if(respuesta.status == 200 && success == true){
-              
+
                 $q.notify({
                   type: 'positive',
                   message: data,
                   position: 'top-right',
-                  progress: true,                            
-                })                                 
+                  progress: true,
+                })
                 loading.value = true
                 loading.value = false
-                RegistroIntegracion.value = false  
+                RegistroIntegracion.value = false
                 limpiarRegistro()
               $q.loading.hide()
-              
+
             }else{
               $q.notify({
                 type: 'negative',
@@ -652,16 +653,16 @@ export default defineComponent({
                 progress: true
               })
              $q.loading.hide()
-            }              
-          })     
+            }
+          })
        },
-      
+
       //Metodo edit para editar los registros
         onEdit(){
           $q.loading.show()
           let partido = partidoId.value
           let tipoReprenante = idTipoRepresentante.value
-         
+
           const idT = idIntegracion.value;
           api.put("/IntegracionPartidos/"+idT,{
              partido_Id:partido.value,
@@ -670,22 +671,22 @@ export default defineComponent({
             apellido_Paterno: apePaterno.value,
             apellido_Materno:apeMaterno.value,
             email: emailRepresentante.value,
-            telefono_1: telRepresentante.value,           
+            telefono_1: telRepresentante.value,
             fecha_Inicio: fechaInicio.value,
             fecha_Fin: fechaFinal.value,
 
-          }).then(function (respuesta){   
-            let{data,success} = respuesta.data         
-            if(respuesta.status == 200 && success == true){        
+          }).then(function (respuesta){
+            let{data,success} = respuesta.data
+            if(respuesta.status == 200 && success == true){
               $q.notify({
                 type: 'positive',
                 message: data,
                 position: 'top-right',
-                progress: true,                            
-              })            
+                progress: true,
+              })
               loading.value = true
               rowsintegracion.value = [  ]
-              Integracion(partido.value)                
+              Integracion(partido.value)
               loading.value = false
               EditarIntegracion.value = false
               limpiarRegistro()
@@ -699,9 +700,9 @@ export default defineComponent({
               })
                $q.loading.hide()
             }
-          })     
+          })
           },
-      
+
        exportTable () {
           const content = [columnsintegracion.map(col => wrapCsvValue(col.label))].concat(
           rowsintegracion.value.map(row => columnsintegracion.map(col => wrapCsvValue(
@@ -726,7 +727,7 @@ export default defineComponent({
               position: 'top-right'
           })
           }
-      },    
+      },
     }
     function wrapCsvValue (val, formatFn) {
       let formatted = formatFn !== void 0
@@ -747,8 +748,8 @@ export default defineComponent({
 
       return `"${formatted}"`
     }
-    
+
   },
-  
+
 })
 </script>

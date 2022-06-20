@@ -1,9 +1,10 @@
 <template>
-          <!-- Aqui inicia el template con la tabla -->       
-  <div class="row q-pa-sm q-gutter-md">     
-      <div class="col-12">   
-        <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroTipoEmpleado = true"/>
+          <!-- Aqui inicia el template con la tabla -->
+  <div class="row q-pa-sm q-gutter-md">
+      <div class="col-12">
+        <q-btn v-show="PRegistrar" class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistroTipoEmpleado = true"/>
           <q-table
+              v-show="PLeer"
               title="Tipos de Empleado"
               :rows="rowsempleados"
               :columns="columnsempleados"
@@ -13,7 +14,7 @@
               :loading="loading"
               v-model:pagination="pagination"
               no-data-label="No se encontraron registros"
-              rows-per-page-label="Registros por página"                                               
+              rows-per-page-label="Registros por página"
               >
               <template v-slot:top-right>
                 <q-input v-model="textbuscar" dense label="Buscar"  class="q-pr-md">
@@ -26,17 +27,17 @@
               </template >
               <template v-slot:body ="props">
                 <q-tr :props="props">
-                  <q-td 
+                  <q-td
                     v-for="col in props.cols"
                     :key="col.name"
                     :props="props"
                   >
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeleteTipoEmpleado(col.value)"> 
+                  <q-btn v-if="col.name==='id'" v-show="PEliminar" flat round color="purple-ieen" icon="delete" @click="DeleteTipoEmpleado(col.value)">
                     <q-tooltip>
                       Borrar registro
                     </q-tooltip>
                   </q-btn>
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="edit" @click="EditarTipoEmpleadoMetodo(col.value)">
+                  <q-btn v-if="col.name==='id'" v-show="PActualizar" flat round color="purple-ieen" icon="edit" @click="EditarTipoEmpleadoMetodo(col.value)">
                     <q-tooltip>
                       editar registro
                     </q-tooltip>
@@ -65,22 +66,22 @@
               label="  Titulo del nuevo tipo de empleado"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'Por favor ingresa un titulo']"
-            />    
+            />
             <q-input
               filled
               v-model="descriEmpleado"
               label="  Descripción del tipo de empleado"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'Por favor ingresa un titulo']"
-            />   
+            />
             <q-card-actions align="right">
               <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroTipoEmpleado = false" />
-              <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />        
+              <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />
             </q-card-actions>
           </q-form>
         </q-card-section>
       </q-card>
-    </q-dialog> 
+    </q-dialog>
 
        <!-- Dilog pata la edición del tipo de area -->
     <q-dialog v-model="EditarTipoEmpleado" persistent transition-show="scale" transition-hide="scale">
@@ -100,45 +101,47 @@
                   label="  Nuevo nombre del tipo de empleado"
                   lazy-rules
                   :rules="[ val => val && val.length > 0 || 'Por favor ingresa un titulo']"
-                />   
+                />
                  <q-input
                   filled
                   v-model="editarDescripcion"
                   label="  Nueva descripción del tipo de empleado"
                   lazy-rules
                   :rules="[ val => val && val.length > 0 || 'Por favor ingresa un titulo']"
-                />          
+                />
                 <q-card-actions align="right">
                   <q-btn label="Cancelar" type="reset" color="negative"   @click="EditarTipoEmpleado = false" />
-                  <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />             
+                  <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />
                 </q-card-actions>
               </q-form>
             </q-card-section>
         </q-card>
-    </q-dialog>    
-  
+    </q-dialog>
+
 </template>
 
 <script>
-import { defineComponent,ref } from 'vue';
+import { defineComponent,ref,onBeforeMount } from 'vue';
 import { exportFile, useQuasar} from 'quasar'
 import {api} from '../../../boot/axios.js'
+import { useStore } from 'vuex';
 
 
-const columnsempleados = [                
+const columnsempleados = [
                 { name: 'tipo', align: 'center', label: 'Tipo de empleado', field: 'tipo', sortable: true, },
                 { name: 'descripcion', align: 'center', label: 'Descipción del empleado', field: 'descripcion', sortable: true, },
                 { name: 'id', align: 'center', label: 'Opciones', field: 'id' },
-                
-                
+
+
             ]
 
 
 export default defineComponent({
   name: 'TemplateTipoEmpleado',
-  
+
   setup(){
     const $q = useQuasar()
+    const store = useStore()
     const textbuscar = ref('')
     const rowsempleados = ref([])
     const tipoEmpleado = ref("")
@@ -149,6 +152,11 @@ export default defineComponent({
     const loading = ref(true)
     const RegistroTipoEmpleado = ref(false)
     const EditarTipoEmpleado = ref(false)
+    const PRegistrar = ref(false)
+    const PActualizar = ref(false)
+    const PEliminar = ref(false)
+    const PLeer = ref(false)
+    const ListaPermiso = ref([])
     const pagination = ref({
         page: 1,
         rowsPerPage: 10,
@@ -157,24 +165,37 @@ export default defineComponent({
         }
     )
     // Este es el metodo para listar en tabla
+    onBeforeMount (async() =>{
+      const Lista= store.getters['auth/PermisosObtenidos']
+      const filtro = Lista.find(elemento => elemento.nombre === "TiposEmpleados")
+      ListaPermiso.value= filtro
+      console.log("Este es el listado de los permisos de este modulo", ListaPermiso.value)
+      const {registrar,actualizar,eliminar,leer} = ListaPermiso.value
+      PRegistrar.value = registrar
+      PActualizar.value = actualizar
+      PEliminar.value = eliminar
+      PLeer.value = leer
+      console.log("Este es el registro",registrar)
+    })
+
     const getAreas = async () => {
-      api.get('/TiposEmpleados').then(res => {  
+      const res = await api.get('/TiposEmpleados',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
         let {data} = res.data
         data.forEach(reg => {
             let obj = {
-                        "id":reg.id,
-                        "tipo":reg.tipo, 
-                        "descripcion": reg.descripcion                
+            "id":reg.id,
+            "tipo":reg.tipo,
+            "descripcion": reg.descripcion
                       };
             rowsempleados.value.push(obj)
         })
-      })      
+
       loading.value = false
     }
     getAreas()
 
     // Este es el metodo para eliminar registro
-    const DeleteTipoEmpleado = function(id){ 
+    const DeleteTipoEmpleado = async(id) =>{
       $q.dialog({
         title: 'Eliminar registro',
         icon: 'Warning',
@@ -188,26 +209,26 @@ export default defineComponent({
         },
         message: '¿Esta seguro de eliminar este tipo de área?',
         persistent: true
-      }).onOk(() => {
+      }).onOk(async() => {
          $q.loading.show()
-          api.delete('/TiposEmpleados/'+id).then(function (respuesta){    
-            let{data,success} = respuesta.data        
-            if(respuesta.status == 200 && success == true){        
+          api.delete('/TiposEmpleados/'+id,{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+            let{data,success} = respuesta.data
+            if(respuesta.status == 200 && success == true){
               $q.notify({
                 type: 'positive',
                 message: data,
                 position: 'top-right',
-                progress: true,                            
+                progress: true,
               })
-            
+
               loading.value = true
               rowsempleados.value = [  ]
               getAreas()
               loading.value = false
               RegistroTipoEmpleado.value = false
                $q.loading.hide()
-            
-           
+
+
             }else{
               $q.notify({
                 type: 'negative',
@@ -217,23 +238,22 @@ export default defineComponent({
               })
                $q.loading.hide()
             }
-          })   
+
       })
     }
-  
+
     //Este es el metodo para editar registro
-    const EditarTipoEmpleadoMetodo = function(id){
+    const EditarTipoEmpleadoMetodo = async(id) =>{
       EditarTipoEmpleado.value = true;
-      api.get('/TiposEmpleados/'+id).then(function(res) {  
+      const res = await api.get('/TiposEmpleados/'+id,{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
         let {data} = res.data
-            editarEmpleado.value = data.tipo
-            editarDescripcion.value = data.descripcion
-            idEditarEmpleado.value = data.id 
-        })
+        editarEmpleado.value = data.tipo
+        editarDescripcion.value = data.descripcion
+        idEditarEmpleado.value = data.id
     }
-       
+
     return{
-       
+
        textbuscar,
        tipoEmpleado,
        descriEmpleado,
@@ -248,32 +268,38 @@ export default defineComponent({
        DeleteTipoEmpleado,
        pagination,
        loading,
-       
+       PRegistrar,
+        PActualizar,
+        PEliminar,
+        PLeer,
+        ListaPermiso,
+
+
       //MEtodo submit para guardar registro
-       onSubmit(){ 
+       onSubmit(){
           $q.loading.show()
-          api.post("/TiposEmpleados",{
+          const respuesta = api.post("/TiposEmpleados",{
              tipo: tipoEmpleado.value,
              descripcion: descriEmpleado.value
-          }).then(function (respuesta){       
+          },{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
               let{data,success} = respuesta.data
             if(respuesta.status == 200 && success == true){
-              
+
                 $q.notify({
                   type: 'positive',
                   message: data,
                   position: 'top-right',
-                  progress: true,                            
-                })                                 
+                  progress: true,
+                })
                 loading.value = true
                 rowsempleados.value = [  ]
                 getAreas()
                 loading.value = false
-                RegistroTipoEmpleado.value = false  
+                RegistroTipoEmpleado.value = false
                 tipoEmpleado.value = ""
                 descriEmpleado.value = ""
               $q.loading.hide()
-              
+
             }else{
               $q.notify({
                 type: 'negative',
@@ -282,25 +308,25 @@ export default defineComponent({
                 progress: true
               })
              $q.loading.hide()
-            }              
-          })     
+            }
+
        },
       //Metodo edit para editar los registros
         onEdit(){
           $q.loading.show()
           const idT = idEditarEmpleado.value;
-          api.put("/TiposEmpleados/"+idT,{
+          const respuesta = api.put("/TiposEmpleados/"+idT,{
               tipo: editarEmpleado.value,
               descripcion: editarDescripcion.value
-          }).then(function (respuesta){   
-            let{data,success} = respuesta.data         
-            if(respuesta.status == 200 && success == true){        
+          },{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+            let{data,success} = respuesta.data
+            if(respuesta.status == 200 && success == true){
               $q.notify({
                 type: 'positive',
                 message: data,
                 position: 'top-right',
-                progress: true,                            
-              })            
+                progress: true,
+              })
               loading.value = true
               rowsempleados.value = [  ]
               getAreas()
@@ -316,9 +342,9 @@ export default defineComponent({
               })
                $q.loading.hide()
             }
-          })     
+
           },
-      
+
        exportTable () {
           const content = [columnsempleados.map(col => wrapCsvValue(col.label))].concat(
           rowsempleados.value.map(row => columnsempleados.map(col => wrapCsvValue(
@@ -343,7 +369,7 @@ export default defineComponent({
               position: 'top-right'
           })
           }
-      },    
+      },
     }
     function wrapCsvValue (val, formatFn) {
       let formatted = formatFn !== void 0
@@ -364,8 +390,8 @@ export default defineComponent({
 
       return `"${formatted}"`
     }
-    
+
   },
-  
+
 })
 </script>

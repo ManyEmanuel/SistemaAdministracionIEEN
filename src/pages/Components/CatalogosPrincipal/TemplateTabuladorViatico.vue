@@ -1,9 +1,10 @@
 <template>
-          <!-- Aqui inicia el template con la tabla -->       
-  <div class="row q-pa-sm q-gutter-md">     
-      <div class="col-12">   
-        <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistrarTabulador"/>
+          <!-- Aqui inicia el template con la tabla -->
+  <div class="row q-pa-sm q-gutter-md">
+      <div class="col-12">
+        <q-btn v-show="PRegistrar" class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistrarTabulador"/>
           <q-table
+              v-show="PLeer"
               title="Tabulador de viaticos"
               :rows="rowstabulador"
               :columns="columnstabulador"
@@ -13,7 +14,7 @@
               :loading="loading"
               v-model:pagination="pagination"
               no-data-label="No se encontraron registros"
-              rows-per-page-label="Registros por página"                                               
+              rows-per-page-label="Registros por página"
               >
               <template v-slot:top-right>
                 <q-input v-model="textbuscar" dense label="Buscar"  class="q-pr-md">
@@ -37,29 +38,29 @@
               </template>
               <template v-slot:body ="props">
                 <q-tr :props="props">
-                  <q-td 
+                  <q-td
                     v-for="col in props.cols"
                     :key="col.name"
                     :props="props"
                   >
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete" @click="DeleteTabulador(col.value)"> 
+                  <q-btn v-if="col.name==='id'" v-show="PEliminar" flat round color="purple-ieen" icon="delete" @click="DeleteTabulador(col.value)">
                     <q-tooltip>
                       Borrar registro
                     </q-tooltip>
                   </q-btn>
-                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="edit" @click="EditarTabuladorMetodo(col.value)">
+                  <q-btn v-if="col.name==='id'" v-show="PActualizar" flat round color="purple-ieen" icon="edit" @click="EditarTabuladorMetodo(col.value)">
                     <q-tooltip>
                       editar registro
                     </q-tooltip>
                   </q-btn>
-                   <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="visibility" @click="VerTabulador(col.value)"> 
+                   <q-btn v-if="col.name==='id'" v-show="PLeer" flat round color="purple-ieen" icon="visibility" @click="VerTabulador(col.value)">
                     <q-tooltip>
                       Ver tabulador
                     </q-tooltip>
                   </q-btn>
                   <label v-else>{{col.value}}</label>
                   </q-td>
-                </q-tr>               
+                </q-tr>
               </template>
           </q-table>
       </div>
@@ -77,11 +78,11 @@
             >
               <div class="q-gutter-sm row items-start">
                 <div class="col">
-                  <q-select 
+                  <q-select
                     filled
                     v-model="tipoEmpleado"
-                    :options="itemsTabulador" 
-                    label="Tipo de empleado" 
+                    :options="itemsTabulador"
+                    label="Tipo de empleado"
                      lazy-rules
                     :rules="[val => !!val || 'Por favor selecciona un tipo de empleado']"
                   />
@@ -90,8 +91,8 @@
               </div>
               <div class="q-gutter-sm">
                 <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes de 30 a 100 km de distancia</q-badge>
-              </div>  
-              <div class="q-gutter-sm row items-start">            
+              </div>
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -100,7 +101,7 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val.length > 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -110,14 +111,14 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val.length > 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
-              </div>    
+              </div>
               <div class="q-gutter-sm">
                 <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes de mas de 100 km de distancia</q-badge>
-              </div> 
-               
-              <div class="q-gutter-sm row items-start">            
+              </div>
+
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -126,7 +127,7 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val.length > 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -136,14 +137,14 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val.length > 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
-              </div>  
+              </div>
               <div class="q-gutter-sm">
                 <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes a Bahia de Banderas</q-badge>
               </div>
-               
-              <div class="q-gutter-sm row items-start">            
+
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -152,7 +153,7 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val.length > 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -162,14 +163,14 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val.length > 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
-              </div>    
+              </div>
               <div class="q-gutter-sm">
-                <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes fuera del estado</q-badge>  
-              </div>      
-               
-              <div class="q-gutter-sm row items-start">            
+                <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes fuera del estado</q-badge>
+              </div>
+
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -178,7 +179,7 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val.length > 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -188,17 +189,17 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val.length > 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
-              </div>   
+              </div>
               <q-card-actions align="right">
                 <q-btn label="Cancelar" type="reset" color="negative"   @click="RegistroTipoTabulador = false" />
-                <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />        
+                <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />
               </q-card-actions>
           </q-form>
         </q-card-section>
       </q-card>
-    </q-dialog> 
+    </q-dialog>
 
        <!-- Dilog pata la edición del tipo de area -->
     <q-dialog v-model="EditarTipoTabulador" persistent transition-show="scale" transition-hide="scale">
@@ -214,13 +215,13 @@
               <q-input  v-show="false" v-model="idTabulador" />
                <div class="q-gutter-sm column items-center">
                 <div class="col">
-                  <h4 class="q-ma-xs">{{tipoEmpleado}}</h4>          
+                  <h4 class="q-ma-xs">{{tipoEmpleado}}</h4>
                 </div>
               </div>
               <div class="q-gutter-sm">
                 <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes de 30 a 100 km de distancia</q-badge>
-              </div>  
-              <div class="q-gutter-sm row items-start">            
+              </div>
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -229,7 +230,7 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val >= 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -239,14 +240,14 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val >= 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
-              </div>    
+              </div>
               <div class="q-gutter-sm">
                 <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes de mas de 100 km de distancia</q-badge>
-              </div> 
-               
-              <div class="q-gutter-sm row items-start">            
+              </div>
+
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -255,7 +256,7 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val >= 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -265,14 +266,14 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val >= 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
-              </div>  
+              </div>
               <div class="q-gutter-sm">
                 <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes a Bahia de Banderas</q-badge>
               </div>
-               
-              <div class="q-gutter-sm row items-start">            
+
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -281,7 +282,7 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val >= 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -291,14 +292,14 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val >= 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
-              </div>    
+              </div>
               <div class="q-gutter-sm">
-                <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes fuera del estado</q-badge>  
-              </div>      
-               
-              <div class="q-gutter-sm row items-start">            
+                <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes fuera del estado</q-badge>
+              </div>
+
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -307,7 +308,7 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val >= 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -317,17 +318,17 @@
                     lazy-rules
                     type="number" prefix="$"
                     :rules="[ val => val && val >= 0 || 'Por favor ingresa una cantidad']"
-                  />  
+                  />
                 </div>
-              </div>          
+              </div>
                 <q-card-actions align="right">
                   <q-btn label="Cancelar" type="reset" color="negative"   @click="EditarTipoTabulador = false" />
-                  <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />             
+                  <q-btn label="Guardar" type="submit" color="positive" class="q-ml-sm" />
                 </q-card-actions>
               </q-form>
           </q-card-section>
         </q-card>
-    </q-dialog>    
+    </q-dialog>
     <q-dialog v-model="VerTipoTabulador" persistent transition-show="scale" transition-hide="scale">
         <q-card style="width: 700px; max-width: 80vw;">
           <q-card-section>
@@ -341,13 +342,13 @@
               <q-input  v-show="false" v-model="idTabulador" />
                <div class="q-gutter-sm column items-center">
                 <div class="col">
-                  <h4 class="q-ma-xs">{{tipoEmpleado}}</h4>          
+                  <h4 class="q-ma-xs">{{tipoEmpleado}}</h4>
                 </div>
               </div>
               <div class="q-gutter-sm">
                 <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes de 30 a 100 km de distancia</q-badge>
-              </div>  
-              <div class="q-gutter-sm row items-start">            
+              </div>
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -355,7 +356,7 @@
                     label="Viatico sin pernoctar"
                     readonly
                     prefix="$"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -364,14 +365,14 @@
                     label="Viatico pernoctando"
                     readonly
                     prefix="$"
-                  />  
+                  />
                 </div>
-              </div>    
+              </div>
               <div class="q-gutter-sm">
                 <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes de mas de 100 km de distancia</q-badge>
-              </div> 
-               
-              <div class="q-gutter-sm row items-start">            
+              </div>
+
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -379,7 +380,7 @@
                     label="Viatico sin pernoctar"
                     readonly
                     prefix="$"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -388,14 +389,14 @@
                     label="Viatico pernoctando"
                     readonly
                     prefix="$"
-                  />  
+                  />
                 </div>
-              </div>  
+              </div>
               <div class="q-gutter-sm">
                 <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes a Bahia de Banderas</q-badge>
               </div>
-               
-              <div class="q-gutter-sm row items-start">            
+
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -403,7 +404,7 @@
                     label="Viatico sin pernoctar"
                     readonly
                     prefix="$"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -412,14 +413,14 @@
                     label="Viatico pernoctando"
                     readonly
                     prefix="$"
-                  />  
+                  />
                 </div>
-              </div>    
+              </div>
               <div class="q-gutter-sm">
-                <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes fuera del estado</q-badge>  
-              </div>      
-               
-              <div class="q-gutter-sm row items-start">            
+                <q-badge class="q-pa-sm" transparent color=pink-ieen-3 text-color="white" style="font-size:120%">Viaticos para viajes fuera del estado</q-badge>
+              </div>
+
+              <div class="q-gutter-sm row items-start">
                 <div class="col">
                   <q-input
                     filled
@@ -427,7 +428,7 @@
                     label="Viatico sin pernoctar"
                     readonly
                     prefix="$"
-                  />  
+                  />
                 </div>
                 <div class="col">
                    <q-input
@@ -436,40 +437,41 @@
                     label="Viatico pernoctando"
                     readonly
                     prefix="$"
-                  
-                  />  
+
+                  />
                 </div>
-              </div>          
+              </div>
                 <q-card-actions align="right">
-                  <q-btn label="Cerrar" type="reset" color="negative"   @click="VerTipoTabulador = false" />           
+                  <q-btn label="Cerrar" type="reset" color="negative"   @click="VerTipoTabulador = false" />
                 </q-card-actions>
               </q-form>
           </q-card-section>
         </q-card>
-    </q-dialog> 
-  
+    </q-dialog>
+
 </template>
 
 <script>
-import { defineComponent,ref } from 'vue';
+import { defineComponent,ref,onBeforeMount } from 'vue';
 import { exportFile, useQuasar} from 'quasar'
 import {api} from '../../../boot/axios.js'
+import { useStore } from 'vuex';
+
+const columnstabulador = [
 
 
-const columnstabulador = [                               
-                
-                
                 { name: 'tipo_Empleado', align: 'center', label: 'Tipo de Empleado', field: 'tipo_Empleado', sortable: true, },
                 { name: 'id', align: 'center', label: 'Opciones', field: 'id' },
-                
+
             ]
 
 
 export default defineComponent({
   name: 'TemplateTabuladorViatico',
-  
+
   setup(){
     const $q = useQuasar()
+    const store = useStore()
     const capturaIdTipoArea = ref([])
     //Variables de guardado y edición
     const idTabulador = ref('')
@@ -483,11 +485,16 @@ export default defineComponent({
     const perBahia = ref('')
     const sinPerFuera = ref('')
     const perFuera = ref('')
-    
+
     //---------------------------------------------------------------------------//
     //
+    const PRegistrar = ref(false)
+    const PActualizar = ref(false)
+    const PEliminar = ref(false)
+    const PLeer = ref(false)
+    const ListaPermiso = ref([])
     const textbuscar = ref('')
-    const rowstabulador = ref([]) 
+    const rowstabulador = ref([])
     const idEditarArea = ref("")
     const editarArea = ref("")
     const loading = ref(true)
@@ -502,26 +509,40 @@ export default defineComponent({
         }
     )
     // Este es el metodo para listar en tabla
+
+    onBeforeMount (async() =>{
+         const Lista= store.getters['auth/PermisosObtenidos']
+         const filtro = Lista.find(elemento => elemento.nombre === "TabuladorViaticos")
+         ListaPermiso.value= filtro
+         console.log("Este es el listado de los permisos de este modulo", ListaPermiso.value)
+         const {registrar,actualizar,eliminar,leer} = ListaPermiso.value
+         PRegistrar.value = registrar
+         PActualizar.value = actualizar
+         PEliminar.value = eliminar
+         PLeer.value = leer
+         console.log("Este es el registro",registrar)
+    })
+
     const getAreas = async () => {
-      api.get('/TabuladoresViaticos').then(res => {  
+      loading.value = true
+      const res = await api.get('/TabuladoresViaticos',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
         let {data} = res.data
         data.forEach(reg => {
             let obj = {
-                        "id":reg.id,
-                        "tipo_Empleado":reg.tipo_Empleado,               
+              "id":reg.id,
+              "tipo_Empleado":reg.tipo_Empleado,
                       };
             rowstabulador.value.push(obj)
         })
-      })      
       loading.value = false
     }
     getAreas()
 
-    const RegistrarTabulador = function(){
+    const RegistrarTabulador = async() =>{
       limpiarRegistro()
       RegistroTipoTabulador.value = true
       itemsTabulador.value =[]
-      api.get('/TiposEmpleados/GetLista').then(function(respuesta){
+      const respuesta = await api.get('/TiposEmpleados/GetLista',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
         let{data} = respuesta.data;
         data.forEach((item)=>{
           itemsTabulador.value.push({
@@ -529,75 +550,66 @@ export default defineComponent({
             value: item.value
           });
         })
-      });
     }
 
-    const EditarTabuladorMetodo = function(id){
-      EditarTipoTabulador.value = true    
-      
+    const EditarTabuladorMetodo = async(id) =>{
+      EditarTipoTabulador.value = true
       itemsTabulador.value =[]
-      api.get('/TiposEmpleados').then(function(respuesta){
-        let{data} = respuesta.data;
-        data.forEach((item)=>{
+      const respuesta = await api.get('/TiposEmpleados',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+        let datos = respuesta.data.data;
+        datos.forEach((item)=>{
           itemsTabulador.value.push({
             label: item.tipo,
             value: item.id
           });
         })
-      });     
-      api.get('/TabuladoresViaticos/'+id).then(function(res) {  
+
+      const res = await api.get('/TabuladoresViaticos/'+id,{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
         let {data} = res.data
-            idTabulador.value = data.id
-            sinPer30100.value = data.sin_Pernoctar_30_100
-            per30100.value = data.pernoctado_30_100
-            sinPer100.value = data.sin_Pernoctar_100
-            per100.value = data.pernoctado_100
-            sinPerBahia.value = data.sin_Pernoctar_BDB
-            perBahia.value = data.pernoctadd_BDB
-            sinPerFuera.value = data.sin_Pernoctar_FDE
-            perFuera.value = data.pernoctado_FDE
-            const filtro1 = itemsTabulador.value
-            const { label} = filtro1.find(elemento => elemento.value === data.tipo_Empleado_Id)
-            tipoEmpleado.value = label
-
-      });  
-
+        idTabulador.value = data.id
+        sinPer30100.value = data.sin_Pernoctar_30_100
+        per30100.value = data.pernoctado_30_100
+        sinPer100.value = data.sin_Pernoctar_100
+        per100.value = data.pernoctado_100
+        sinPerBahia.value = data.sin_Pernoctar_BDB
+        perBahia.value = data.pernoctadd_BDB
+        sinPerFuera.value = data.sin_Pernoctar_FDE
+        perFuera.value = data.pernoctado_FDE
+        const filtro1 = itemsTabulador.value
+        const { label} = filtro1.find(elemento => elemento.value === data.tipo_Empleado_Id)
+        tipoEmpleado.value = label
     }
 
-      const VerTabulador = function(id){
-      VerTipoTabulador.value = true    
-      
+      const VerTabulador = async(id) =>{
+      VerTipoTabulador.value = true
       itemsTabulador.value =[]
-      api.get('/TiposEmpleados').then(function(respuesta){
-        let{data} = respuesta.data;
-        data.forEach((item)=>{
+      const respuesta = await api.get('/TiposEmpleados',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+        let datos = respuesta.data.data;
+        datos.forEach((item)=>{
           itemsTabulador.value.push({
             label: item.tipo,
             value: item.id
           });
         })
-      });     
-      api.get('/TabuladoresViaticos/'+id).then(function(res) {  
+
+      const res = await api.get('/TabuladoresViaticos/'+id,{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
         let {data} = res.data
-            idTabulador.value = data.id
-            sinPer30100.value = data.sin_Pernoctar_30_100
-            per30100.value = data.pernoctado_30_100
-            sinPer100.value = data.sin_Pernoctar_100
-            per100.value = data.pernoctado_100
-            sinPerBahia.value = data.sin_Pernoctar_BDB
-            perBahia.value = data.pernoctadd_BDB
-            sinPerFuera.value = data.sin_Pernoctar_FDE
-            perFuera.value = data.pernoctado_FDE
-            const filtro1 = itemsTabulador.value
-            const { label} = filtro1.find(elemento => elemento.value === data.tipo_Empleado_Id)
-            tipoEmpleado.value = label
-
-      });  
-
+        idTabulador.value = data.id
+        sinPer30100.value = data.sin_Pernoctar_30_100
+        per30100.value = data.pernoctado_30_100
+        sinPer100.value = data.sin_Pernoctar_100
+        per100.value = data.pernoctado_100
+        sinPerBahia.value = data.sin_Pernoctar_BDB
+        perBahia.value = data.pernoctadd_BDB
+        sinPerFuera.value = data.sin_Pernoctar_FDE
+        perFuera.value = data.pernoctado_FDE
+        const filtro1 = itemsTabulador.value
+        const { label} = filtro1.find(elemento => elemento.value === data.tipo_Empleado_Id)
+        tipoEmpleado.value = label
     }
-    
+
     // Este es el metodo para eliminar registro
-    const DeleteTabulador = function(id){ 
+    const DeleteTabulador = async(id) =>{
       $q.dialog({
         title: 'Eliminar registro',
         icon: 'Warning',
@@ -611,26 +623,25 @@ export default defineComponent({
         },
         message: '¿Esta seguro de eliminar este tabulador?',
         persistent: true
-      }).onOk(() => {
+      }).onOk(async () => {
          $q.loading.show()
-          api.delete('/TabuladoresViaticos/'+id).then(function (respuesta){    
-            let{data,success} = respuesta.data        
-            if(respuesta.status == 200 && success == true){        
+          const respuesta = await api.delete('/TabuladoresViaticos/'+id,{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+            let{data,success} = respuesta.data
+            if(respuesta.status == 200 && success == true){
               $q.notify({
                 type: 'positive',
                 message: data,
                 position: 'top-right',
-                progress: true,                            
+                progress: true,
               })
-            
+
               loading.value = true
               rowstabulador.value = [  ]
               getAreas()
               loading.value = false
               RegistroTipoTabulador.value = false
                $q.loading.hide()
-            
-           
+
             }else{
               $q.notify({
                 type: 'negative',
@@ -640,36 +651,35 @@ export default defineComponent({
               })
                $q.loading.hide()
             }
-          })   
       })
     }
-  
+
     //Este es el metodo para editar registr
 
-    const limpiarRegistro = function(){
-                  idTabulador.value = ""
-                  sinPer30100.value=""
-                  per30100.value=""
-                  sinPer100.value=""
-                  per100.value=""
-                  sinPerBahia.value=""
-                  perBahia.value=""
-                  sinPerFuera.value=""
-                  perFuera.value=""
-                  tipoEmpleado.value ="" 
+    const limpiarRegistro = async() =>{
+      idTabulador.value = ""
+      sinPer30100.value=""
+      per30100.value=""
+      sinPer100.value=""
+      per100.value=""
+      sinPerBahia.value=""
+      perBahia.value=""
+      sinPerFuera.value=""
+      perFuera.value=""
+      tipoEmpleado.value =""
     }
-       
-     
+
+
     return{
        // Variables de guardado y edición
        sinPer30100,
-       per30100, 
-       sinPer100, 
-       per100, 
-       sinPerBahia, 
+       per30100,
+       sinPer100,
+       per100,
+       sinPerBahia,
        perBahia,
-       sinPerFuera, 
-       perFuera, 
+       sinPerFuera,
+       perFuera,
        idTabulador,
        tipoEmpleado,
        itemsTabulador,
@@ -686,12 +696,18 @@ export default defineComponent({
        limpiarRegistro,
        EditarTabuladorMetodo,
        VerTipoTabulador,
+       PRegistrar,
+        PActualizar,
+        PEliminar,
+        PLeer,
+        ListaPermiso,
+
       //MEtodo submit para guardar registro
-       onSubmit(){ 
+       onSubmit(){
           $q.loading.show()
           const{value} = tipoEmpleado.value
           console.log(value)
-          api.post("/TabuladoresViaticos",{
+          const respuesta = api.post("/TabuladoresViaticos",{
              tipo_Empleado_Id: value,
                    sin_Pernoctar_30_100: sinPer30100.value,
                    pernoctado_30_100: per30100.value,
@@ -701,25 +717,25 @@ export default defineComponent({
                    pernoctadd_BDB: perBahia.value,
                    sin_Pernoctar_FDE: sinPerFuera.value,
                    pernoctado_FDE: perFuera.value,
-          }).then(function (respuesta){       
+          },{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
             console.log(respuesta)
               let{data,success} = respuesta.data
             if(respuesta.status == 200 && success == true){
-              
+
                 $q.notify({
                   type: 'positive',
                   message: data,
                   position: 'top-right',
-                  progress: true,                            
-                })                                 
+                  progress: true,
+                })
                 loading.value = true
                 rowstabulador.value = [  ]
                 getAreas()
                 loading.value = false
-                RegistroTipoTabulador.value = false 
+                RegistroTipoTabulador.value = false
                 limpiarRegistro()
               $q.loading.hide()
-              
+
             }else{
               $q.notify({
                 type: 'negative',
@@ -728,35 +744,35 @@ export default defineComponent({
                 progress: true
               })
              $q.loading.hide()
-            }              
-          })     
+            }
+
        },
 
-      
+
       //Metodo edit para editar los registros
         onEdit(){
           $q.loading.show()
-         
+
           const idT = idTabulador.value;
-          api.put("/TabuladoresViaticos/"+idT,{    
-                    tipo_Empleado_Id: 0,            
-                   sin_Pernoctar_30_100: sinPer30100.value,
-                   pernoctado_30_100: per30100.value,
-                   sin_Pernoctar_100: sinPer100.value,
-                   pernoctado_100: per100.value,
-                   sin_Pernoctar_BDB: sinPerBahia.value,
-                   pernoctadd_BDB: perBahia.value,
-                   sin_Pernoctar_FDE: sinPerFuera.value,
-                   pernoctado_FDE: perFuera.value,
-          }).then(function (respuesta){   
-            let{data,success} = respuesta.data         
-            if(respuesta.status == 200 && success == true){        
+          const respuesta = api.put("/TabuladoresViaticos/"+idT,{
+            tipo_Empleado_Id: 0,
+            sin_Pernoctar_30_100: sinPer30100.value,
+            pernoctado_30_100: per30100.value,
+            sin_Pernoctar_100: sinPer100.value,
+            pernoctado_100: per100.value,
+            sin_Pernoctar_BDB: sinPerBahia.value,
+            pernoctadd_BDB: perBahia.value,
+            sin_Pernoctar_FDE: sinPerFuera.value,
+            pernoctado_FDE: perFuera.value,
+          },{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+            let{data,success} = respuesta.data
+            if(respuesta.status == 200 && success == true){
               $q.notify({
                 type: 'positive',
                 message: data,
                 position: 'top-right',
-                progress: true,                            
-              })            
+                progress: true,
+              })
               loading.value = true
               rowstabulador.value = [  ]
               getAreas()
@@ -773,9 +789,9 @@ export default defineComponent({
               })
                $q.loading.hide()
             }
-          })     
+
           },
-        
+
        exportTable () {
           const content = [columnstabulador.map(col => wrapCsvValue(col.label))].concat(
           rowstabulador.value.map(row => columnstabulador.map(col => wrapCsvValue(
@@ -800,7 +816,7 @@ export default defineComponent({
               position: 'top-right'
           })
           }
-      },    
+      },
     }
     function wrapCsvValue (val, formatFn) {
       let formatted = formatFn !== void 0
@@ -821,8 +837,8 @@ export default defineComponent({
 
       return `"${formatted}"`
     }
-    
+
   },
-  
+
 })
 </script>

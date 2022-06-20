@@ -3,7 +3,7 @@
     <q-header elevated style="background-color: rgb(103,62,132)">
       <q-toolbar>
         <q-btn
-          flat       
+          flat
           round
           dense
           icon="menu"
@@ -11,10 +11,10 @@
           @click="drawer = !drawer"
         />
         <q-toolbar-title>
-          Sistema de Administración 
+          Sistema de Administración
         </q-toolbar-title>
 
-        <div><q-btn flat label="Cerrar Sesión" text-color="white" /></div>
+        <div><q-btn flat label="Cerrar Sesión" text-color="white"  @click="LogOut()" /></div>
       </q-toolbar>
     </q-header>
     <q-footer elevated class="bg-purple-ieen">
@@ -27,8 +27,8 @@
       v-model="drawer"
       show-if-above
       :width="250"
-      :breakpoint="400"  
-      class="text-black"    
+      :breakpoint="1024"
+      class="text-black"
     >
 
       <q-scroll-area style="height: calc(100% - 130px); margin-top: 130px; border-right: 1px solid #ddd">
@@ -37,7 +37,7 @@
             v-for="link in essentialLinks"
             :key="link.title"
             v-bind="link"
-          />     
+          />
         </q-list>
       </q-scroll-area>
       <q-img class="absolute-top" src="~assets/Fondo.png" style="height: 130px" >
@@ -123,7 +123,7 @@
 import EssentialLink from 'components/EssentialLink.vue'
 
 const linksList = [
-  
+
   {
     title: 'CÁTALOGOS DE TIPOS',
     icon: 'menu_book',
@@ -135,24 +135,27 @@ const linksList = [
     icon: 'menu_book',
     link: {name:'CatalogosPrincipal'}
   },
-  {
+ /* {
     title: 'PARTIDOS POLITICOS',
     icon: 'groups',
     link: {name:'PartidosPoliticos'}
-  },
+  },*/
   {
     title: 'EMPLEADOS',
     icon: 'person',
     link: {name:'Empleados'}
   },
-  {
+  /*{
     title: 'CONFIGURACIONES',
     icon: 'build',
     link: {name:'CatalogosTipos'}
-  },
+  },*/
 
 ]
 import { defineComponent, ref } from 'vue'
+import { useQuasar } from 'quasar'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'MainLayout',
@@ -162,15 +165,47 @@ export default defineComponent({
   },
 
   setup () {
+    const $q = useQuasar()
+    const store = useStore()
+    const router = useRouter()
     const leftDrawerOpen = ref(false)
+
+    const Permisos = async()=>{
+    const {success} =  await store.dispatch('auth/GeneraPermisos')
+    console.log(success)
+    }
+    Permisos()
+    const LogOut = async () => {
+      $q.dialog({
+        title: '¿Que acción desea realizar?',
+        icon: 'Warning',
+        ok:{
+          color: 'purple-6',
+          label: 'Cerrar sesión'
+        },
+        cancel:{
+          color: 'purple-6',
+          label: 'Ir a universo IEEN'
+        },
+        persistent: true
+      }).onOk(() => {
+        $q.localStorage.remove("token")
+        window.location = "http://192.168.0.124:8081?return=false"
+      })
+      .onCancel(()=>{
+        window.location = "http://192.168.0.124:8081?return=true"
+      })
+
+    }
     return {
       leftDrawerOpen,
       essentialLinks: linksList,
-       drawer: ref(false),
-       miniState: ref(false),
+      drawer: ref(false),
+      miniState: ref(false),
+      LogOut,
       toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-        
+      leftDrawerOpen.value = !leftDrawerOpen.value
+
       }
     }
   }

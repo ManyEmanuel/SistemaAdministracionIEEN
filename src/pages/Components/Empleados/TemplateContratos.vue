@@ -1,11 +1,10 @@
 <template>
           <!-- Aqui inicia el template con la tabla -->
-        <q-btn v-show="PRegistrar" class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistrarEmpleado(), limpiarRegistro()"/>
+        <q-btn class="q-ma-sm" color="purple-ieen" icon-right="add_circle_outline" label="Agregar nuevo" @click="RegistrarEmpleado(), limpiarRegistro()"/>
          <q-table
-              v-show="PLeer"
               title="Registro de empleados"
-              :rows="rowsempleados"
-              :columns="columnsempleados"
+              :rows="rowscontratos"
+              :columns="columnscontratos"
               :filter="textbuscar"
               row-key ="id"
               color="purple-ieen"
@@ -30,18 +29,24 @@
                     :key="col.name"
                     :props="props"
                   >
-                  <q-btn v-if="col.name==='id'" v-show="PEliminar" flat round color="purple-ieen" icon="delete" @click="DeleteRequisito(col.value)">
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="delete">
                     <q-tooltip>
                       Borrar registro
                     </q-tooltip>
                   </q-btn>
-                  <q-btn v-if="col.name==='id'" v-show="PActualizar" flat round color="purple-ieen" icon="edit" @click="EditarRequisitoMetodo(col.value)">
+                  <q-btn v-if="col.name==='id'" flat round color="purple-ieen" icon="edit" @click="EditarRequisitoMetodo(col.value)">
                     <q-tooltip>
                       editar registro
                     </q-tooltip>
                   </q-btn>
+                  <q-btn v-else-if="col.name==='documento'" :href="(col.value)" target="_blank" flat round color="purple-ieen" icon="delete">
+                      <q-tooltip>
+                       ver documento
+                    </q-tooltip>
+                  </q-btn>
                   <label v-else-if="col.name === 'activo' && col.value ===true"> Activo</label>
                   <label v-else-if="col.name === 'activo' && col.value ===false"> Baja</label>
+
                   <label v-else>{{col.value}}</label>
                   </q-td>
                 </q-tr>
@@ -549,24 +554,25 @@
 </template>
 
 <script>
-import { defineComponent,ref, onBeforeMount } from 'vue';
+import { defineComponent,ref } from 'vue';
 import { date, exportFile, useQuasar} from 'quasar'
 import {api} from '../../../boot/axios.js'
 import { useStore } from 'vuex';
 
-const columnsempleados = [
 
-                { name: 'nombre', align: 'center', label: 'Nombre del Empleado', field: 'nombre', sortable: true, },
-                { name: 'area', align: 'center', label: 'Área del Empleado', field: 'area', sortable: true, },
-                { name: 'puesto', align: 'center', label: 'Puesto del Empleado', field: 'puesto', sortable: true, },
-                { name: 'activo', align: 'center', label: 'Estatus del Empleado', field: 'activo', sortable: true, },
+const columnscontratos = [
+
+                { name: 'empleado', align: 'center', label: 'Nombre del Empleado', field: 'empleado', sortable: true, },
+                { name: 'fecha', align: 'center', label: 'Fecha inicio del Contrato', field: 'fecha', sortable: true, },
+                { name: 'documento', align: 'center', label: 'Documento del Contrato', field: 'documento', sortable: true, },
+                { name: 'idEmpleado', align: 'center', field: 'idEmpleado', sortable: true, },
                 { name: 'id', align: 'center', label: 'Opciones', field: 'id' },
 
             ]
 
 
 export default defineComponent({
-  name: 'TemplateEmpleados',
+  name: 'TemplateContratos',
 
   setup(){
     const $q = useQuasar()
@@ -589,19 +595,14 @@ export default defineComponent({
     const telefonoEmpleado = ref()
     const sexoEmpleado = ref()
     const activoEmpleado = ref(false)
-    //---------------------
-
-        const PRegistrar = ref(false)
-    const PActualizar = ref(false)
-    const PEliminar = ref(false)
-    const PLeer = ref(false)
-    const ListaPermiso = ref([])
+    //---------------------------------------------------------------------------//
+    //
     const step = ref(1)
     const ventana1 = ref(false)
     const ventana2 = ref(false)
     const ventana3 = ref(false)
     const textbuscar = ref('')
-    const rowsempleados = ref([])
+    const rowscontratos = ref([])
     const nameModelo = ref([])
     const itemTipoEmp = ref([])
     const itemTratamiento = ref([])
@@ -621,38 +622,25 @@ export default defineComponent({
         }
     )
     // Este es el metodo para listar en tabla
-    onBeforeMount (async() =>{
-         const Lista= store.getters['auth/PermisosObtenidos']
-         const filtro = Lista.find(elemento => elemento.nombre === "RegistroEmpleado")
-         ListaPermiso.value= filtro
-         console.log("Este es el listado de los permisos de este modulo", ListaPermiso.value)
-         const {registrar,actualizar,eliminar,leer} = ListaPermiso.value
-         PRegistrar.value = registrar
-         PActualizar.value = actualizar
-         PEliminar.value = eliminar
-         PLeer.value = leer
-         console.log("Este es el registro",registrar)
-    })
     const getAreas = async () => {
-      loading.value = true
-      const res = await api.get('/Empleados',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+      api.get('/Contratos').then(res => {
         let {data} = res.data
         data.forEach(reg => {
             let obj = {
-            "id":reg.id,
-            "nombre":reg.nombres +" " +reg.apellido_Paterno +" " + reg.apellido_Materno,
-            "activo":reg.activo,
-            "area": reg.area,
-            "puesto": reg.puesto,
-            "foto":reg.foto_URL,
-            };
-            rowsempleados.value.push(obj)
+                        "id":reg.id,
+                        "empleado":reg.empleado,
+                        "fecha": reg.fecha_Inicio,
+                        "documento": reg.documento_URL,
+                        "idEmpleado": reg.empleado_Id,
+                      };
+            rowscontratos.value.push(obj)
         })
+      })
       loading.value = false
     }
     getAreas()
 
-    const EditarRequisitoMetodo = async(id)=>{
+    const EditarRequisitoMetodo = function(id){
       EditarRequisito.value = true
       itemArea.value =[]
       itemTipoEmp.value=[]
@@ -660,7 +648,7 @@ export default defineComponent({
       itemTratamiento.value=[]
       itemRequisito.value=[]
       nameModelo.value=[]
-      const respuesta = await api.get('/Areas',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+      api.get('/Areas').then(function(respuesta){
         let{data} = respuesta.data;
         data.forEach((item)=>{
           itemArea.value.push({
@@ -668,47 +656,49 @@ export default defineComponent({
             value: item.id
           });
         })
-      const respuesta1 = await api.get('/TiposEmpleados',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
-        let data1 = respuesta1.data.data;
-        data1.forEach((item)=>{
+      });
+      api.get('/TiposEmpleados').then(function(respuesta){
+        let{data} = respuesta.data;
+        data.forEach((item)=>{
           itemTipoEmp.value.push({
             label: item.tipo,
             value: item.id
           });
         })
-
-      const respuesta2 = await api.get('/Puestos',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
-        let data2 = respuesta2.data.data;
-        data2.forEach((item)=>{
+      });
+      api.get('/Puestos').then(function(respuesta){
+        let{data} = respuesta.data;
+        data.forEach((item)=>{
           itemPuesto.value.push({
             label: item.nombre,
             value: item.id
           });
         })
-
-      const respuesta3 = await api.get('/Tratamientos',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
-        let data3 = respuesta3.data.data;
-        data3.forEach((item)=>{
+      });
+      api.get('/Tratamientos').then(function(respuesta){
+        let{data} = respuesta.data;
+        data.forEach((item)=>{
           itemTratamiento.value.push({
             label: item.titulo,
             value: item.id
           });
         })
-
+      });
       var Entregados = ([]);
-      const respuesta4 = await api.get('/DocumentosEmpleados/ByEmpleado/'+id,{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
-        let data4 = respuesta4.data.data;
-          data4.forEach((item)=>{
+      api.get('/DocumentosEmpleados/ByEmpleado/'+id).then(function(respuesta){
+        let {data} = respuesta.data;
+          data.forEach((item)=>{
              Entregados.push({
             value: item.requisito_Id,
             id: item.id,
           });
-        })
+          })
+        });
       console.log(Entregados)
-      const respuesta5 = await api.get('/DocumentosRequeridos',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
-        let data5 = respuesta5.data.data;
+      api.get('/DocumentosRequeridos').then(function(respuesta){
+        let{data} = respuesta.data;
         var index = 0;
-        data5.forEach((item)=>{
+        data.forEach((item)=>{
           var conteo = Entregados.find(elemento => elemento.value === item.id)
           if(conteo === undefined){
             itemRequisito.value.push({
@@ -741,37 +731,38 @@ export default defineComponent({
           index++
           console.log(nameModelo.value)
         })
-      const res = await api.get('/Empleados/'+id,{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
-        let data6 = res.data.data
-          idEmpleado.value = data6.id
-          nombresEmpleado.value = data6.nombres
-          apellidoPaterno.value = data6.apellido_Paterno
-          apellidoMaterno.value = data6.apellido_Materno
-          emailEmpleado.value = data6.email
-          fotoEmpleado.value = data6.foto_URL
+      });
+      api.get('/Empleados/'+id).then(function(res) {
+        let {data} = res.data
+          idEmpleado.value = data.id
+          nombresEmpleado.value = data.nombres
+          apellidoPaterno.value = data.apellido_Paterno
+          apellidoMaterno.value = data.apellido_Materno
+          emailEmpleado.value = data.email
+          fotoEmpleado.value = data.foto_URL
           console.log(fotoEmpleado.value)
-          fechaNacimiento.value= date.formatDate(data6.fecha_Nacimiento,'YYYY-MM-DD')
-          rfcEmpleado.value= data6.rfc
-          curpEmpleado.value= data6.curp
-          telefonoEmpleado.value= data6.telefono
-          sexoEmpleado.value = data6.sexo
-          activoEmpleado.value= data6.activo
+          fechaNacimiento.value= date.formatDate(data.fecha_Nacimiento,'YYYY-MM-DD')
+          rfcEmpleado.value= data.rfc
+          curpEmpleado.value= data.curp
+          telefonoEmpleado.value= data.telefono
+          sexoEmpleado.value = data.sexo
+          activoEmpleado.value= data.activo
           const filtro1 = itemArea.value
-          let itemp1 = filtro1.find(elemento => elemento.value === data6.area_Id)
+          let itemp1 = filtro1.find(elemento => elemento.value === data.area_Id)
           idArea.value= itemp1
           const filtro2 = itemTipoEmp.value
-          let itemp2 = filtro2.find(elemento => elemento.value === data6.tipo_Empleado_Id)
+          let itemp2 = filtro2.find(elemento => elemento.value === data.tipo_Empleado_Id)
           idTipoEmpleado.value = itemp2
           const filtro3 = itemPuesto.value
-          let itemp3 = filtro3.find(elemento => elemento.value === data6.puesto_Id)
+          let itemp3 = filtro3.find(elemento => elemento.value === data.puesto_Id)
           idPuesto.value = itemp3
           const filtro4 = itemTratamiento.value
-          let itemp4 = filtro4.find(elemento => elemento.value === data6.tratamiento_Id)
+          let itemp4 = filtro4.find(elemento => elemento.value === data.tratamiento_Id)
           idTratamiento.value = itemp4
-
+      });
     }
     // Este es el metodo para eliminar registro
-    const DeleteRequisito = async (id) =>{
+    const DeleteRequisito = function(id){
       $q.dialog({
         title: 'Eliminar registro',
         icon: 'Warning',
@@ -785,22 +776,22 @@ export default defineComponent({
         },
         message: '¿Esta seguro de eliminar este requisito?',
         persistent: true
-      }).onOk(async() => {
+      }).onOk(() => {
          $q.loading.show()
-          const respuesta = await api.delete('/Empleados/'+id,{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+          api.delete('/Empleados/'+id).then(function (respuesta){
             let{data,success} = respuesta.data
             if(respuesta.status == 200 && success == true){
               var Entregados = ([]);
-              const respuesta1 = await api.get('/DocumentosEmpleados/ByEmpleado/'+id,{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
-                let {data} = respuesta1.data;
+              api.get('/DocumentosEmpleados/ByEmpleado/'+id).then(function(respuesta){
+                let {data} = respuesta.data;
                   data.forEach((item)=>{
                     Entregados.push({
                     value: item.id,
                   });
                   })
-
+                });
                 for(var i = 0 ; i< Entregados.length ; i++){
-                  api.delete('/DocumentosEmpleados/'+Entregados[i],{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+                  api.delete('/DocumentosEmpleados/'+Entregados[i])
                  }
               $q.notify({
                 type: 'positive',
@@ -810,7 +801,7 @@ export default defineComponent({
               })
 
               loading.value = true
-              rowsempleados.value = [  ]
+              rowscontratos.value = [  ]
               getAreas()
               loading.value = false
               RegistroEmpleado.value = false
@@ -826,7 +817,7 @@ export default defineComponent({
               })
                $q.loading.hide()
             }
-
+          })
       })
     }
 
@@ -851,7 +842,7 @@ export default defineComponent({
         activoEmpleado.value=false
     }
 
-     const RegistrarEmpleado = async() =>{
+     const RegistrarEmpleado = function(){
       RegistroEmpleado.value = true
       itemArea.value =[]
       itemTipoEmp.value=[]
@@ -859,7 +850,7 @@ export default defineComponent({
       itemTratamiento.value=[]
       itemRequisito.value=[]
       nameModelo.value=[]
-      const respuesta = await api.get('/Areas',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+      api.get('/Areas').then(function(respuesta){
         let{data} = respuesta.data;
         data.forEach((item)=>{
           itemArea.value.push({
@@ -867,38 +858,38 @@ export default defineComponent({
             value: item.id
           });
         })
-
-      const respuesta1 = await api.get('/TiposEmpleados',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
-        let data1 = respuesta1.data.data;
-        data1.forEach((item)=>{
+      });
+      api.get('/TiposEmpleados').then(function(respuesta){
+        let{data} = respuesta.data;
+        data.forEach((item)=>{
           itemTipoEmp.value.push({
             label: item.tipo,
             value: item.id
           });
         })
-
-      const respuesta2 = await api.get('/Puestos',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
-        let data2 = respuesta2.data.data;
-        data2.forEach((item)=>{
+      });
+      api.get('/Puestos').then(function(respuesta){
+        let{data} = respuesta.data;
+        data.forEach((item)=>{
           itemPuesto.value.push({
             label: item.nombre,
             value: item.id
           });
         })
-
-      const respuesta3 = await api.get('/Tratamientos',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
-        let data3 = respuesta3.data.data;
-        data3.forEach((item)=>{
+      });
+      api.get('/Tratamientos').then(function(respuesta){
+        let{data} = respuesta.data;
+        data.forEach((item)=>{
           itemTratamiento.value.push({
             label: item.titulo,
             value: item.id
           });
         })
-
-      const respuesta4 = await api.get('/DocumentosRequeridos',{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
-        let data4 = respuesta4.data.data;
+      });
+      api.get('/DocumentosRequeridos').then(function(respuesta){
+        let{data} = respuesta.data;
         var index = 0;
-        data4.forEach((item)=>{
+        data.forEach((item)=>{
           itemRequisito.value.push({
             label: item.nombre,
             value: item.id,
@@ -912,7 +903,7 @@ export default defineComponent({
           index++
         })
 
-
+      });
       console.log(itemRequisito.value, nameModelo.value)
     }
 
@@ -949,8 +940,8 @@ export default defineComponent({
        itemRequisito,
        editarArea,
        idEditarArea,
-       columnsempleados,
-       rowsempleados,
+       columnscontratos,
+       rowscontratos,
        RegistroEmpleado,
        RegistrarEmpleado,
        EditarRequisito,
@@ -959,11 +950,6 @@ export default defineComponent({
        loading,
        limpiarRegistro,
        EditarRequisitoMetodo,
-       PRegistrar,
-        PActualizar,
-        PEliminar,
-        PLeer,
-        ListaPermiso,
       //MEtodo submit para guardar registro
        onSubmit(){
           $q.loading.show()
@@ -984,7 +970,7 @@ export default defineComponent({
           formData.append("puesto_Id",idPuesto.value.value)
           formData.append("tratamiento_Id",idTratamiento.value.value)
           formData.append("tipo_Empleado_Id", idTipoEmpleado.value.value)
-          api.post("/Empleados",formData,{headers:{'Content-Type': 'multipart/form-data','Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}}).then(function (respuesta){
+          api.post("/Empleados",formData,{headers:{'Content-Type': 'multipart/form-data'}}).then(function (respuesta){
             console.log(respuesta)
               let{data,success,id} = respuesta.data
             if(respuesta.status == 200 && success == true){
@@ -998,7 +984,7 @@ export default defineComponent({
                     DocData.append("titulo",label)
                     DocData.append("documento",nameModelo.value[i])
                     console.log(DocData)
-                      api.post("/DocumentosEmpleados",DocData,{headers:{'Content-Type':'multipart/form-data','Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+                      api.post("/DocumentosEmpleados",DocData,{headers:{'Content-Type':'multipart/form-data'}})
                   }
                  }
                 $q.notify({
@@ -1008,7 +994,7 @@ export default defineComponent({
                   progress: true,
                 })
                 loading.value = true
-                rowsempleados.value = [  ]
+                rowscontratos.value = [  ]
                 getAreas()
                 loading.value = false
                 RegistroEmpleado.value = false
@@ -1034,7 +1020,7 @@ export default defineComponent({
           $q.loading.show()
           const idT = idEmpleado.value;
           var Entregados = ([]);
-          const respuesta = api.get('/DocumentosEmpleados/ByEmpleado/'+idT,{headers:{'Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+          api.get('/DocumentosEmpleados/ByEmpleado/'+idT).then(function(respuesta){
             let {data} = respuesta.data;
               data.forEach((item)=>{
                 Entregados.push({
@@ -1042,7 +1028,7 @@ export default defineComponent({
                 id: item.id,
               });
               })
-
+            });
             console.log(Entregados)
          const formData = new FormData();
           formData.append("nombres", nombresEmpleado.value)
@@ -1060,7 +1046,7 @@ export default defineComponent({
           formData.append("puesto_Id",idPuesto.value.value)
           formData.append("tratamiento_Id",idTratamiento.value.value)
           formData.append("tipo_Empleado_Id", idTipoEmpleado.value.value)
-          api.put("/Empleados/"+idT,formData,{headers:{'Content-Type': 'multipart/form-data','Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}}).then(function (respuesta){
+          api.put("/Empleados/"+idT,formData,{headers:{'Content-Type': 'multipart/form-data'}}).then(function (respuesta){
             console.log(respuesta)
               let{data,success} = respuesta.data
             if(respuesta.status == 200 && success == true){
@@ -1076,12 +1062,12 @@ export default defineComponent({
                     var conteo = Entregados.find(elemento => elemento.value === value)
                     console.log(conteo)
                      if(conteo === undefined){
-                       api.post("/DocumentosEmpleados",DocData,{headers:{'Content-Type': 'multipart/form-data','Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+                       api.post("/DocumentosEmpleados",DocData,{headers:{'Content-Type': 'multipart/form-data'}})
                        console.log("esto fue una insercion")
                      }
                      else
                      {
-                       api.put("/DocumentosEmpleados/"+conteo.id,DocData,{headers:{'Content-Type': 'multipart/form-data','Authorization': 'Bearer'+' '+ $q.localStorage.getItem("token")}})
+                       api.put("/DocumentosEmpleados/"+conteo.id,DocData,{headers:{'Content-Type': 'multipart/form-data'}})
                        console.log("Esto fue una edición")
                      }
 
@@ -1094,7 +1080,7 @@ export default defineComponent({
                   progress: true,
                 })
                 loading.value = true
-                rowsempleados.value = [  ]
+                rowscontratos.value = [  ]
                 getAreas()
                 loading.value = false
                 EditarRequisito.value = false
@@ -1114,8 +1100,8 @@ export default defineComponent({
           },
 
        exportTable () {
-          const content = [columnsempleados.map(col => wrapCsvValue(col.label))].concat(
-          rowsempleados.value.map(row => columnsempleados.map(col => wrapCsvValue(
+          const content = [columnscontratos.map(col => wrapCsvValue(col.label))].concat(
+          rowscontratos.value.map(row => columnscontratos.map(col => wrapCsvValue(
               typeof col.field === 'function'
               ? col.field(row)
               : row[ col.field === void 0 ? col.name : col.field ],

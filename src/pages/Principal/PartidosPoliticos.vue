@@ -1,9 +1,9 @@
 <template>
   <div class="q-pa-md">
     <h4 class="text-center">Partidos Politicos</h4><br>
-  
+
   <q-card>
-      
+
       <q-tabs
         v-model="tab"
         dense
@@ -21,13 +21,14 @@
 
       <q-tab-panels v-model="tab" animated class="text-right">
         //Registro de tipo de area//
-        <q-tab-panel name="Partidos">       
+        <q-tab-panel name="Partidos">
             <TemplatePartidos/>
-        </q-tab-panel>             
+        </q-tab-panel>
         <q-tab-panel name="Integracion">
             <TemplateIntegracionPartidos/>
-        </q-tab-panel>    
+        </q-tab-panel>
       </q-tab-panels>
+
     </q-card>
   </div>
 </template>
@@ -43,13 +44,13 @@ export default defineComponent({
     TemplatePartidos,
     TemplateIntegracionPartidos,
   },
-  setup(){   
+  setup(){
     return{
-      tab: ref('Partidos'),   
-      
-    }  
+      tab: ref('Partidos'),
+
+    }
   }
-  
+
 })
 
 </script>
